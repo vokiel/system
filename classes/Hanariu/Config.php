@@ -7,11 +7,11 @@ class Config {
 	public function load($group)
 	{
 
-		if ($files = Hanariu::find_file('config', $group, NULL, TRUE))
+		if ($files = Core\Filesystem::find_file('config', $group, NULL, TRUE))
 		{
 			foreach ($files as $file)
 			{
-				$this->_sources = Arr::merge($this->_sources, Hanariu::load($file));
+				$this->_sources = Arr::merge($this->_sources, Core\Filesystem::load($file));
 			}
 		}
 
