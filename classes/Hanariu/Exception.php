@@ -3,15 +3,15 @@
 class Exception extends \Exception {
 
 	public static $php_errors = array(
-		E_ERROR              => 'Fatal Error',
-		E_USER_ERROR         => 'User Error',
-		E_PARSE              => 'Parse Error',
-		E_WARNING            => 'Warning',
-		E_USER_WARNING       => 'User Warning',
-		E_STRICT             => 'Strict',
-		E_NOTICE             => 'Notice',
-		E_RECOVERABLE_ERROR  => 'Recoverable Error',
-		E_DEPRECATED         => 'Deprecated',
+		E_ERROR => 'Fatal Error',
+		E_USER_ERROR => 'User Error',
+		E_PARSE => 'Parse Error',
+		E_WARNING => 'Warning',
+		E_USER_WARNING => 'User Warning',
+		E_STRICT => 'Strict',
+		E_NOTICE => 'Notice',
+		E_RECOVERABLE_ERROR => 'Recoverable Error',
+		E_DEPRECATED => 'Deprecated',
 	);
 
 	public static $error_view = 'errors/error';
