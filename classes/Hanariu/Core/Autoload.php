@@ -1,4 +1,4 @@
-<?php namespace Kohana\Hanariu;
+<?php namespace Hanariu\Core;
 
 class Autoload
 {
