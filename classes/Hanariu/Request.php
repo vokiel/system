@@ -201,7 +201,7 @@ class Request implements HTTP\Request {
 
 	public static function user_agent($value)
 	{
-		return \Hanariu\Text\Text::user_agent(Request::$user_agent, $value);
+		return Core\Agent::user_agent(Request::$user_agent, $value);
 	}
 
 	public static function accept_type($type = NULL)
