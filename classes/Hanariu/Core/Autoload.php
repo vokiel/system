@@ -5,7 +5,7 @@ class Autoload
 	protected $_filesystem;
 	protected $_root = 'classes';
 
-	public function __construct(Filesystem $filesystem, $root = 'classes')
+	public function __construct(\Hanariu\Core\Filesystem $filesystem, $root = 'classes')
 	{
 		$this->_filesystem = $filesystem;
 		$this->_root = $root;
@@ -40,7 +40,7 @@ class Autoload
 	 * @param   string  $directory  Directory to load from
 	 * @return  boolean
 	 */
-	public function load($class)
+	public function auto_load($class)
 	{
 		// Transform the class name according to PSR-0
 		$class     = ltrim($class, '\\');
