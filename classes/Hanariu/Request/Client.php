@@ -150,7 +150,7 @@ abstract class Client {
 		}
 		elseif ($value === NULL)
 		{
-			return Arr::get($this->_callback_params, $param);
+			return \Hanariu\Arr::get($this->_callback_params, $param);
 		}
 		else
 		{
