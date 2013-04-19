@@ -61,7 +61,7 @@ class Cache
 			{
 				return unserialize(file_get_contents($file));
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
 				// Cache is corrupt, let return happen normally.
 			}
@@ -73,7 +73,7 @@ class Cache
 				// Cache has expired
 				unlink($file);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
 				// Cache has mostly likely already been deleted,
 				// let return happen normally.
