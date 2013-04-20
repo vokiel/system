@@ -131,7 +131,7 @@ class Response implements HTTP\Response {
 		}
 		else
 		{
-			throw new Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
+			throw new \Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
 		}
 	}
 
