@@ -183,7 +183,7 @@ class Route {
 		{
 			try
 			{
-				Core\Cache::cache('Route::cache()', Route::$_routes);
+				Core\Cache::save('Route::cache()', Route::$_routes);
 			}
 			catch (\Exception $e)
 			{
@@ -194,7 +194,7 @@ class Route {
 		}
 		else
 		{
-			if ($routes = Core\Cache::cache('Route::cache()'))
+			if ($routes = Core\Cache::read('Route::cache()'))
 			{
 				if ($append)
 				{
