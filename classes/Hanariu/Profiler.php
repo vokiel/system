@@ -180,7 +180,7 @@ class Profiler {
 	public static function application()
 	{
 
-		$stats = Handler\Cache::cache('profiler_application_stats', NULL, 3600 * 24);
+		$stats = Core\Cache::read('profiler_application_stats');
 
 		if ( ! is_array($stats) OR $stats['count'] > Profiler::$rollover)
 		{
@@ -222,7 +222,7 @@ class Profiler {
 		$stats['average'] = array(
 			'time'   => $stats['total']['time'] / $stats['count'],
 			'memory' => $stats['total']['memory'] / $stats['count']);
-		Handler\Cache::cache('profiler_application_stats', $stats);
+		Core\Cache::save('profiler_application_stats', $stats);
 
 		$stats['current']['time']   = $time;
 		$stats['current']['memory'] = $memory;
