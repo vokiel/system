@@ -28,7 +28,7 @@ class Log {
 	protected $_messages = array();
 	protected $_writers = array();
 
-	public function attach(Log\Writer $writer, $levels = array(), $min_level = 0)
+	public function attach(\Hanariu\Log\Writer $writer, $levels = array(), $min_level = 0)
 	{
 		if ( ! \is_array($levels))
 		{

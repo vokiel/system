@@ -184,7 +184,7 @@ class Route {
 		{
 			try
 			{
-				\Hanariu\Core\Cache::save('Route::cache()', \Hanariu\Route::$_routes);
+				\Hanariu::$cache->save('Route::cache()', \Hanariu\Route::$_routes);
 			}
 			catch (\Exception $e)
 			{
@@ -195,7 +195,7 @@ class Route {
 		}
 		else
 		{
-			if ($routes = \Hanariu\Core\Cache::read('Route::cache()'))
+			if ($routes = \Hanariu::$cache->read('Route::cache()'))
 			{
 				if ($append)
 				{

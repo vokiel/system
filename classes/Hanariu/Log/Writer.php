@@ -28,7 +28,7 @@ abstract class Writer {
 
 	public function format_message(array $message, $format = "time --- level: body in file:line")
 	{
-		$message['time'] = \Hanariu\Date::formatted_time('@'.$message['time'], \Hanariu\Writer::$timestamp, \Hanariu\Writer::$timezone, TRUE);
+		$message['time'] = \Hanariu\Date::formatted_time('@'.$message['time'], \Hanariu\Log\Writer::$timestamp, \Hanariu\Log\Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
 		$string = strtr($format, $message);
@@ -37,7 +37,7 @@ abstract class Writer {
 		{
 			// Re-use as much as possible, just resetting the body to the trace
 			$message['body'] = $message['additional']['exception']->getTraceAsString();
-			$message['level'] = $this->_log_levels[\Hanariu\Writer::$strace_level];
+			$message['level'] = $this->_log_levels[\Hanariu\Log\Writer::$strace_level];
 
 			$string .= PHP_EOL.\strtr($format, $message);
 		}

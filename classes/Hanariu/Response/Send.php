@@ -131,7 +131,7 @@ class Send extends \Hanariu\Response {
 			{
 				$error = \Hanariu\Exception::text($e);
 
-				if (\is_object(Hanariu::$log))
+				if (\is_object(\Hanariu\Hanariu::$log))
 				{
 					\Hanariu\Hanariu::$log->add(\Hanariu\Log::ERROR, $error);
 					\Hanariu\Hanariu::$log->write();

@@ -33,6 +33,8 @@ class Hanariu {
 	public static $_paths = array(APPPATH, SYSPATH);
 	public static $_files = array();
 	public static $_files_changed = FALSE;
+	public static $filesystem = NULL;
+	public static $cache = NULL;
 
 	public static function init(array $settings = NULL)
 	{
@@ -122,7 +124,7 @@ class Hanariu {
 
 		if (Hanariu::$caching === TRUE)
 		{
-			Hanariu::$_files = \Hanariu\Core\Cache::cache('Hanariu::find_file()');
+			Hanariu::$_files = \Hanariu::$cache->read('Hanariu::find_file()');
 		}
 
 		if (isset($settings['charset']))

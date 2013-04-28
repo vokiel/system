@@ -18,7 +18,7 @@ class Syslog extends Writer {
 
 			if (isset($message['additional']['exception']))
 			{
-				\syslog(\Hanariu\Writer::$strace_level, $message['additional']['exception']->getTraceAsString());
+				\syslog(\Hanariu\Log\Writer::$strace_level, $message['additional']['exception']->getTraceAsString());
 			}
 		}
 	}

@@ -179,8 +179,8 @@ class Profiler {
 
 	public static function application()
 	{
-
-		$stats = Core\Cache::read('profiler_application_stats');
+		$stats = \Hanariu::$cache->read('profiler_application_stats', 3600 * 24);
+		//$stats = Kohana::cache('profiler_application_stats', NULL, 3600 * 24);
 
 		if ( ! \is_array($stats) OR $stats['count'] > \Hanariu\Profiler::$rollover)
 		{
@@ -222,7 +222,8 @@ class Profiler {
 		$stats['average'] = array(
 			'time'   => $stats['total']['time'] / $stats['count'],
 			'memory' => $stats['total']['memory'] / $stats['count']);
-		\Hanariu\Core\Cache::save('profiler_application_stats', $stats);
+		
+		\Hanariu::$cache->save('profiler_application_stats', $stats);
 
 		$stats['current']['time']   = $time;
 		$stats['current']['memory'] = $memory;

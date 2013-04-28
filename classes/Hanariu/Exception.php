@@ -17,7 +17,7 @@ class Exception extends \Exception {
 	public static $error_view = 'errors/error';
 	public static $error_view_content_type = 'text/html';
 
-	public function __construct($message = "", array $variables = NULL, $code = 0, \Hanariu\Exception $previous = NULL)
+	public function __construct($message = "", array $variables = NULL, $code = 0, \Exception $previous = NULL)
 	{
 		$message = __($message, $variables);
 		parent::__construct($message, (int) $code, $previous);
@@ -31,14 +31,14 @@ class Exception extends \Exception {
 	}
 
 
-	public static function handler(\Hanariu\Exception $e)
+	public static function handler(\Exception $e)
 	{
 		$response = \Hanariu\Exception::_handler($e);
 		echo $response->send_headers()->body();
 		exit(1);
 	}
 
-	public static function _handler(\Hanariu\Exception $e)
+	public static function _handler(\Exception $e)
 	{
 		try
 		{
@@ -50,29 +50,29 @@ class Exception extends \Exception {
 		catch (\Hanariu\Exception $e)
 		{
 			\ob_get_level() AND \ob_clean();
-			\header('Content-Type: text/plain; charset='.Hanariu::$charset, TRUE, 500);
+			\header('Content-Type: text/plain; charset='.\Hanariu\Hanariu::$charset, TRUE, 500);
 			echo \Hanariu\Exception::text($e);
 			exit(1);
 		}
 	}
 
-	public static function log(\Hanariu\Exception $e, $level = \Hanariu\Log::EMERGENCY)
+	public static function log(\Exception $e, $level = \Hanariu\Log::EMERGENCY)
 	{
-		if (\is_object(Hanariu::$log))
+		if (\is_object(\Hanariu\Hanariu::$log))
 		{
 			$error = \Hanariu\Exception::text($e);
-			Hanariu::$log->add($level, $error, NULL, array('exception' => $e));
-			Hanariu::$log->write();
+			\Hanariu\Hanariu::$log->add($level, $error, NULL, array('exception' => $e));
+			\Hanariu\Hanariu::$log->write();
 		}
 	}
 
-	public static function text(\Hanariu\Exception $e)
+	public static function text(\Exception $e)
 	{
 		return \sprintf('%s [ %s ]: %s ~ %s [ %d ]',
 			\get_class($e), $e->getCode(), \strip_tags($e->getMessage()), \Hanariu\Debug::path($e->getFile()), $e->getLine());
 	}
 
-	public static function response(\Hanariu\Exception $e)
+	public static function response(\Exception $e)
 	{
 		try
 		{
@@ -94,7 +94,7 @@ class Exception extends \Exception {
 			}
 
 
-			if ($e instanceof \Hanariu\ErrorException)
+			if ($e instanceof \ErrorException)
 			{
 
 				if (\function_exists('xdebug_get_function_stack') AND $code == E_ERROR)
@@ -131,7 +131,7 @@ class Exception extends \Exception {
 			$view = \Hanariu\View::factory(\Hanariu\Exception::$error_view, \get_defined_vars());
 			$response = \Hanariu\Response::factory();
 			$response->status(($e instanceof \Hanariu\HTTP\Exception) ? $e->getCode() : 500);
-			$response->headers('Content-Type', \Hanariu\Exception::$error_view_content_type.'; charset='.Hanariu::$charset);
+			$response->headers('Content-Type', \Hanariu\Exception::$error_view_content_type.'; charset='.\Hanariu\Hanariu::$charset);
 			$response->body($view->render());
 		}
 		catch (Exception $e)

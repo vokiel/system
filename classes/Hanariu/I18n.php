@@ -41,7 +41,7 @@ class I18n {
 		{
 			$path = \implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = \Hanariu\Core\Filesystem::find_file('i18n', $path, NULL, TRUE))
+			if ($files = Hanariu::$filesystem->find_all_files('i18n', $path))
 			{
 				$t = array();
 				foreach ($files as $file)

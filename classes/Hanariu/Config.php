@@ -7,7 +7,7 @@ class Config {
 	public function load($group)
 	{
 
-		if ($files = \Hanariu\Core\Filesystem::find_file('config', $group, NULL, TRUE))
+		if ($files = Hanariu::$filesystem->find_all_files('config', $group))
 		{
 			foreach ($files as $file)
 			{

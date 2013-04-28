@@ -25,7 +25,7 @@ abstract class External extends \Hanariu\Request\Client {
 
 	public function execute_request(\Hanariu\Request $request, \Hanariu\Response $response)
 	{
-		if (Hanariu::$profiling)
+		if (\Hanariu\Hanariu::$profiling)
 		{
 			$benchmark = '"'.$request->uri().'"';
 

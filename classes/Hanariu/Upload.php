@@ -101,7 +101,7 @@ class Upload {
 			{
 				list($width, $height) = \getimagesize($file['tmp_name']);
 			}
-			catch (\Hanariu\ErrorException $e)
+			catch (\ErrorException $e)
 			{
 
 			}
