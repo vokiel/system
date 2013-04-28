@@ -10,52 +10,52 @@ class I18n {
 	{
 		if ($lang)
 		{
-			I18n::$lang = strtolower(str_replace(array(' ', '_'), '-', $lang));
+			\Hanariu\I18n::$lang = \strtolower(\str_replace(array(' ', '_'), '-', $lang));
 		}
 
-		return I18n::$lang;
+		return \Hanariu\I18n::$lang;
 	}
 
 	public static function get($string, $lang = NULL)
 	{
 		if ( ! $lang)
 		{
-			$lang = I18n::$lang;
+			$lang = \Hanariu\I18n::$lang;
 		}
 
-		$table = I18n::load($lang);
+		$table = \Hanariu\I18n::load($lang);
 		return isset($table[$string]) ? $table[$string] : $string;
 	}
 
 	public static function load($lang)
 	{
-		if (isset(I18n::$_cache[$lang]))
+		if (isset(\Hanariu\I18n::$_cache[$lang]))
 		{
-			return I18n::$_cache[$lang];
+			return \Hanariu\I18n::$_cache[$lang];
 		}
 
 		$table = array();
-		$parts = explode('-', $lang);
+		$parts = \explode('-', $lang);
 
 		do
 		{
-			$path = implode(DIRECTORY_SEPARATOR, $parts);
+			$path = \implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = Core\Filesystem::find_file('i18n', $path, NULL, TRUE))
+			if ($files = \Hanariu\Core\Filesystem::find_file('i18n', $path, NULL, TRUE))
 			{
 				$t = array();
 				foreach ($files as $file)
 				{
-					$t = array_merge($t, Core\Filesystem::load($file));
+					$t = \array_merge($t, \Hanariu\Core\Filesystem::load($file));
 				}
 
 				$table += $t;
 			}
 
-			array_pop($parts);
+			\array_pop($parts);
 		}
 		while ($parts);
-		return I18n::$_cache[$lang] = $table;
+		return \Hanariu\I18n::$_cache[$lang] = $table;
 	}
 
 } 
@@ -63,12 +63,12 @@ if ( ! function_exists('__'))
 {
 	function __($string, array $values = NULL, $lang = 'en')
 	{
-		if ($lang !== I18n::$lang)
+		if ($lang !== \Hanariu\I18n::$lang)
 		{
-			$string = I18n::get($string);
+			$string = \Hanariu\I18n::get($string);
 		}
 
-		return empty($values) ? $string : strtr($string, $values);
+		return empty($values) ? $string : \strtr($string, $values);
 	}
 }
 

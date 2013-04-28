@@ -41,14 +41,14 @@ class Text {
 		$limit = (int) $limit;
 		$end_char = ($end_char === NULL) ? '…' : $end_char;
 
-		if (trim($str) === '')
+		if (\trim($str) === '')
 			return $str;
 
 		if ($limit <= 0)
 			return $end_char;
 
-		preg_match('/^\s*+(?:\S++\s*+){1,'.$limit.'}/u', $str, $matches);
-		return rtrim($matches[0]).((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
+		\preg_match('/^\s*+(?:\S++\s*+){1,'.$limit.'}/u', $str, $matches);
+		return \rtrim($matches[0]).((\strlen($matches[0]) === \strlen($str)) ? '' : $end_char);
 	}
 
 
@@ -58,90 +58,90 @@ class Text {
 
 		$limit = (int) $limit;
 
-		if (trim($str) === '' OR UTF8::strlen($str) <= $limit)
+		if (\trim($str) === '' OR \Hanariu\UTF8::strlen($str) <= $limit)
 			return $str;
 
 		if ($limit <= 0)
 			return $end_char;
 
 		if ($preserve_words === FALSE)
-			return rtrim(UTF8::substr($str, 0, $limit)).$end_char;
+			return \rtrim(\Hanariu\UTF8::substr($str, 0, $limit)).$end_char;
 
-		if ( ! preg_match('/^.{0,'.$limit.'}\s/us', $str, $matches))
+		if ( ! \preg_match('/^.{0,'.$limit.'}\s/us', $str, $matches))
 			return $end_char;
 
-		return rtrim($matches[0]).((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
+		return \rtrim($matches[0]).((\strlen($matches[0]) === \strlen($str)) ? '' : $end_char);
 	}
 
 	public static function ucfirst($string, $delimiter = '-')
 	{
-		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
+		return \implode($delimiter, \array_map('ucfirst', \explode($delimiter, $string)));
 	}
 
 	public static function reduce_slashes($str)
 	{
-		return preg_replace('#(?<!:)//+#', '/', $str);
+		return \preg_replace('#(?<!:)//+#', '/', $str);
 	}
 
 	public static function auto_link($text)
 	{
-		return Text::auto_link_urls(Text::auto_link_emails($text));
+		return \Hanariu\Text::auto_link_urls(\Hanariu\Text::auto_link_emails($text));
 	}
 
 	public static function auto_link_urls($text)
 	{
-		$text = preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://[^<\s]+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
-		return preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}[^<\s]*\b~i', 'Text::_auto_link_urls_callback2', $text);
+		$text = \preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://[^<\s]+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
+		return \preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}[^<\s]*\b~i', 'Text::_auto_link_urls_callback2', $text);
 	}
 
 	protected static function _auto_link_urls_callback1($matches)
 	{
-		return HTML::anchor($matches[0]);
+		return \Hanariu\HTML::anchor($matches[0]);
 	}
 
 	protected static function _auto_link_urls_callback2($matches)
 	{
-		return HTML::anchor('http://'.$matches[0], $matches[0]);
+		return \Hanariu\HTML::anchor('http://'.$matches[0], $matches[0]);
 	}
 
 	public static function auto_link_emails($text)
 	{
-		return preg_replace_callback('~\b(?<!href="mailto:|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b(?!</a>)~i', 'Text::_auto_link_emails_callback', $text);
+		return \preg_replace_callback('~\b(?<!href="mailto:|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b(?!</a>)~i', 'Text::_auto_link_emails_callback', $text);
 	}
 
 	protected static function _auto_link_emails_callback($matches)
 	{
-		return HTML::mailto($matches[0]);
+		return \Hanariu\HTML::mailto($matches[0]);
 	}
 
 	public static function auto_p($str, $br = TRUE)
 	{
-		if (($str = trim($str)) === '')
+		if (($str = \trim($str)) === '')
 			return '';
-		$str = str_replace(array("\r\n", "\r"), "\n", $str);
-		$str = preg_replace('~^[ \t]+~m', '', $str);
-		$str = preg_replace('~[ \t]+$~m', '', $str);
+		$str = \str_replace(array("\r\n", "\r"), "\n", $str);
+		$str = \preg_replace('~^[ \t]+~m', '', $str);
+		$str = \preg_replace('~[ \t]+$~m', '', $str);
 
-		if ($html_found = (strpos($str, '<') !== FALSE))
+		if ($html_found = (\strpos($str, '<') !== FALSE))
 		{
 			$no_p = '(?:p|div|h[1-6r]|ul|ol|li|blockquote|d[dlt]|pre|t[dhr]|t(?:able|body|foot|head)|c(?:aption|olgroup)|form|s(?:elect|tyle)|a(?:ddress|rea)|ma(?:p|th))';
 
-			$str = preg_replace('~^<'.$no_p.'[^>]*+>~im', "\n$0", $str);
-			$str = preg_replace('~</'.$no_p.'\s*+>$~im', "$0\n", $str);
+			$str = \preg_replace('~^<'.$no_p.'[^>]*+>~im', "\n$0", $str);
+			$str = \preg_replace('~</'.$no_p.'\s*+>$~im', "$0\n", $str);
 		}
 
 		$str = '<p>'.trim($str).'</p>';
-		$str = preg_replace('~\n{2,}~', "</p>\n\n<p>", $str);
+		$str = \preg_replace('~\n{2,}~', "</p>\n\n<p>", $str);
 
 		if ($html_found !== FALSE)
 		{
-			$str = preg_replace('~<p>(?=</?'.$no_p.'[^>]*+>)~i', '', $str);
-			$str = preg_replace('~(</?'.$no_p.'[^>]*+>)</p>~i', '$1', $str);
+			$str = \preg_replace('~<p>(?=</?'.$no_p.'[^>]*+>)~i', '', $str);
+			$str = \preg_replace('~(</?'.$no_p.'[^>]*+>)</p>~i', '$1', $str);
 		}
 
 		if ($br === TRUE)
 		{
-			$str = preg_replace('~(?<!\n)\n(?!\n)~', "<br />\n", $str);
+			$str = \preg_replace('~(?<!\n)\n(?!\n)~', "<br />\n", $str);
 		}
 
 		return $str;
@@ -151,7 +151,7 @@ class Text {
 	public static function bytes($bytes, $force_unit = NULL, $format = NULL, $si = TRUE)
 	{
 		$format = ($format === NULL) ? '%01.2f %s' : (string) $format;
-		if ($si == FALSE OR strpos($force_unit, 'i') !== FALSE)
+		if ($si == FALSE OR \strpos($force_unit, 'i') !== FALSE)
 		{
 			$units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB');
 			$mod   = 1024;
@@ -162,26 +162,26 @@ class Text {
 			$mod   = 1000;
 		}
 
-		if (($power = array_search( (string) $force_unit, $units)) === FALSE)
+		if (($power = \array_search( (string) $force_unit, $units)) === FALSE)
 		{
-			$power = ($bytes > 0) ? floor(log($bytes, $mod)) : 0;
+			$power = ($bytes > 0) ? \floor(\log($bytes, $mod)) : 0;
 		}
 
-		return sprintf($format, $bytes / pow($mod, $power), $units[$power]);
+		return \sprintf($format, $bytes / \pow($mod, $power), $units[$power]);
 	}
 
 	public static function alternate()
 	{
 		static $i;
 
-		if (func_num_args() === 0)
+		if (\func_num_args() === 0)
 		{
 			$i = 0;
 			return '';
 		}
 
-		$args = func_get_args();
-		return $args[($i++ % count($args))];
+		$args = \func_get_args();
+		return $args[($i++ % \count($args))];
 	}
 
 	public static function random($type = NULL, $length = 8)
@@ -215,28 +215,28 @@ class Text {
 			break;
 			default:
 				$pool = (string) $type;
-				$utf8 = ! UTF8::is_ascii($pool);
+				$utf8 = ! \Hanariu\UTF8::is_ascii($pool);
 			break;
 		}
 
-		$pool = ($utf8 === TRUE) ? UTF8::str_split($pool, 1) : str_split($pool, 1);
-		$max = count($pool) - 1;
+		$pool = ($utf8 === TRUE) ? \Hanariu\UTF8::str_split($pool, 1) : \str_split($pool, 1);
+		$max = \count($pool) - 1;
 
 		$str = '';
 		for ($i = 0; $i < $length; $i++)
 		{
-			$str .= $pool[mt_rand(0, $max)];
+			$str .= $pool[\mt_rand(0, $max)];
 		}
 
 		if ($type === 'alnum' AND $length > 1)
 		{
-			if (ctype_alpha($str))
+			if (\ctype_alpha($str))
 			{
-				$str[mt_rand(0, $length - 1)] = chr(mt_rand(48, 57));
+				$str[\mt_rand(0, $length - 1)] = \chr(\mt_rand(48, 57));
 			}
-			elseif (ctype_digit($str))
+			elseif (\ctype_digit($str))
 			{
-				$str[mt_rand(0, $length - 1)] = chr(mt_rand(65, 90));
+				$str[\mt_rand(0, $length - 1)] = \chr(\mt_rand(65, 90));
 			}
 		}
 
@@ -247,10 +247,10 @@ class Text {
 	{
 		foreach ( (array) $badwords as $key => $badword)
 		{
-			$badwords[$key] = str_replace('\*', '\S*?', preg_quote( (string) $badword));
+			$badwords[$key] = \str_replace('\*', '\S*?', \preg_quote( (string) $badword));
 		}
 
-		$regex = '('.implode('|', $badwords).')';
+		$regex = '('.\implode('|', $badwords).')';
 
 		if ($replace_partial_words === FALSE)
 		{
@@ -260,10 +260,10 @@ class Text {
 
 		$regex = '!'.$regex.'!ui';
 
-		if (UTF8::strlen($replacement) == 1)
+		if (\Hanariu\UTF8::strlen($replacement) == 1)
 		{
 			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			return \preg_replace($regex, '\str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
 		}
 
 		return preg_replace($regex, $replacement, $str);
@@ -271,9 +271,9 @@ class Text {
 
 	public static function similar(array $words)
 	{
-		$word = current($words);
+		$word = \current($words);
 
-		for ($i = 0, $max = strlen($word); $i < $max; ++$i)
+		for ($i = 0, $max = \strlen($word); $i < $max; ++$i)
 		{
 			foreach ($words as $w)
 			{
@@ -282,7 +282,7 @@ class Text {
 			}
 		}
 
-		return substr($word, 0, $i);
+		return \substr($word, 0, $i);
 	}
 
 
@@ -298,7 +298,7 @@ class Text {
 		{
 			if ($number / $unit >= 1)
 			{
-				$number -= $unit * ($value = (int) floor($number / $unit));
+				$number -= $unit * ($value = (int) \floor($number / $unit));
 				$item = '';
 
 				if ($unit < 100)
@@ -319,7 +319,7 @@ class Text {
 
 				if (empty($item))
 				{
-					array_pop($text);
+					\array_pop($text);
 
 					$item = $last_item;
 				}
@@ -329,12 +329,12 @@ class Text {
 			}
 		}
 
-		if (count($text) > 1)
+		if (\count($text) > 1)
 		{
-			$and = array_pop($text);
+			$and = \array_pop($text);
 		}
 
-		$text = implode(', ', $text);
+		$text = \implode(', ', $text);
 
 		if (isset($and))
 		{
@@ -347,12 +347,12 @@ class Text {
 
 	public static function widont($str)
 	{
-		$str = rtrim($str);
-		$space = strrpos($str, ' ');
+		$str = \rtrim($str);
+		$space = \strrpos($str, ' ');
 
 		if ($space !== FALSE)
 		{
-			$str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
+			$str = \substr($str, 0, $space).'&nbsp;'.\substr($str, $space + 1);
 		}
 
 		return $str;

@@ -7,7 +7,7 @@ abstract class Redirect extends Expected {
 		if ($uri === NULL)
 			return $this->headers('Location');
 		
-		if (strpos($uri, '://') === FALSE)
+		if (\strpos($uri, '://') === FALSE)
 		{
 			$uri = \Hanariu\URL::site($uri, TRUE, ! empty(\Hanariu\Hanariu::$index_file));
 		}

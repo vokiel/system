@@ -20,7 +20,7 @@ class Filesystem
 
 		foreach ($paths === NULL ? $this->_paths : $paths as $path)
 		{
-			if (is_dir($path.$directory))
+			if (\is_dir($path.$directory))
 			{
 				$dir = new \DirectoryIterator($path.$directory);
 
@@ -29,7 +29,7 @@ class Filesystem
 					$filename = $file->getFilename();
 
 					// Skip all hidden files and UNIX backup files
-					if ($filename[0] === '.' OR $filename[strlen($filename)-1] === '~')
+					if ($filename[0] === '.' OR $filename[\strlen($filename)-1] === '~')
 						continue;
 
 					// Relative filename is the array key
@@ -73,7 +73,7 @@ class Filesystem
 
 		foreach ($this->_paths as $dir)
 		{
-			if (is_file($dir.$path))
+			if (\is_file($dir.$path))
 			{
 				$found = $dir.$path;
 				break;
@@ -91,7 +91,7 @@ class Filesystem
 
 		foreach ($this->_paths as $dir)
 		{
-			if (is_file($dir.$path))
+			if (\is_file($dir.$path))
 				$found[] = $dir.$path;
 		}
 

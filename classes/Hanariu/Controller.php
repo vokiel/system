@@ -5,7 +5,7 @@ abstract class Controller {
 	public $request;
 	public $response;
 
-	public function __construct(Request $request, Response $response)
+	public function __construct(\Hanariu\Request $request, \Hanariu\Response $response)
 	{
 		$this->request = $request;
 		$this->response = $response;
@@ -17,9 +17,9 @@ abstract class Controller {
 		$this->before();
 		$action = 'action_'.$this->request->action();
 
-		if ( ! method_exists($this, $action))
+		if ( ! \method_exists($this, $action))
 		{
-			throw HTTP\Exception::factory(404,
+			throw \Hanariu\HTTP\Exception::factory(404,
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())
 			)->request($this->request);
@@ -36,7 +36,7 @@ abstract class Controller {
 		$lang = $this->request->lang();
 
 		if(!empty($lang)){
-			I18n::lang($lang);
+			\Hanariu\I18n::lang($lang);
 		}
 	}
 	public function after(){}
@@ -44,12 +44,12 @@ abstract class Controller {
 
 	public static function redirect($uri = '', $code = 302)
 	{
-		return HTTP::redirect($uri, $code);
+		return \Hanariu\HTTP::redirect($uri, $code);
 	}
 
 	protected function check_cache($etag = NULL)
 	{
-		return HTTP::check_cache($this->request, $this->response, $etag);
+		return \Hanariu\HTTP::check_cache($this->request, $this->response, $etag);
 	}
 
 }

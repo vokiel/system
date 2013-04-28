@@ -13,11 +13,11 @@ class ToUnicode{
 
 		$out = array();
 
-		$len = strlen($str);
+		$len = \strlen($str);
 
 		for ($i = 0; $i < $len; $i++)
 		{
-			$in = ord($str[$i]);
+			$in = \ord($str[$i]);
 
 			if ($m_state == 0)
 			{
@@ -78,7 +78,7 @@ class ToUnicode{
 				else
 				{
 					// Current octet is neither in the US-ASCII range nor a legal first octet of a multi-octet sequence.
-					trigger_error('UTF8::to_unicode: Illegal sequence identifier in UTF-8 at byte '.$i, E_USER_WARNING);
+					\trigger_error('\Hanariu\UTF8::to_unicode: Illegal sequence identifier in UTF-8 at byte '.$i, E_USER_WARNING);
 					return FALSE;
 				}
 			}
@@ -108,7 +108,7 @@ class ToUnicode{
 							// Codepoints outside the Unicode range are illegal
 							($m_ucs4 > 0x10FFFF))
 						{
-							trigger_error('UTF8::to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
+							\trigger_error('\Hanariu\UTF8::to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
 							return FALSE;
 						}
 
@@ -128,7 +128,7 @@ class ToUnicode{
 				{
 					// ((0xC0 & (*in) != 0x80) AND (m_state != 0))
 					// Incomplete multi-octet sequence
-					throw new \Hanariu\Exception("UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte ':byte'", array(
+					throw new \Hanariu\Exception("\Hanariu\UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte ':byte'", array(
 						':byte' => $i,
 					));
 				}

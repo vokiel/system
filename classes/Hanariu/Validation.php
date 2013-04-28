@@ -33,7 +33,7 @@ class Validation implements \ArrayAccess {
 
 	public function offsetUnset($offset)
 	{
-		throw new Exception('Validation objects are read-only.');
+		throw new \Hanariu\Exception('Validation objects are read-only.');
 	}
 
 	public function offsetGet($offset)
@@ -79,7 +79,7 @@ class Validation implements \ArrayAccess {
 
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = \preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
 		$this->_rules[$field][] = array($rule, $params);
@@ -91,7 +91,7 @@ class Validation implements \ArrayAccess {
 	{
 		foreach ($rules as $rule)
 		{
-			$this->rule($field, $rule[0], Arr::get($rule, 1));
+			$this->rule($field, $rule[0], \Hanariu\Arr::get($rule, 1));
 		}
 
 		return $this;
@@ -99,7 +99,7 @@ class Validation implements \ArrayAccess {
 
 	public function bind($key, $value = NULL)
 	{
-		if (is_array($key))
+		if (\is_array($key))
 		{
 			foreach ($key as $name => $value)
 			{
@@ -118,17 +118,17 @@ class Validation implements \ArrayAccess {
 	{
 		if (Hanariu::$profiling === TRUE)
 		{
-			$benchmark = Profiler::start('Validation', __FUNCTION__);
+			$benchmark = \Hanariu\Profiler::start('\Hanariu\Validation', __FUNCTION__);
 		}
 
 		$data = $this->_errors = array();
 		$original = $this->_data;
-		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
+		$expected = \Hanariu\Arr::merge(\array_keys($original), \array_keys($this->_labels));
 		$rules     = $this->_rules;
 
 		foreach ($expected as $field)
 		{
-			$data[$field] = Arr::get($this, $field);
+			$data[$field] = \Hanariu\Arr::get($this, $field);
 
 			if (isset($rules[TRUE]))
 			{
@@ -137,7 +137,7 @@ class Validation implements \ArrayAccess {
 					$rules[$field] = array();
 				}
 
-				$rules[$field] = array_merge($rules[$field], $rules[TRUE]);
+				$rules[$field] = \array_merge($rules[$field], $rules[TRUE]);
 			}
 		}
 
@@ -162,7 +162,7 @@ class Validation implements \ArrayAccess {
 
 				foreach ($params as $key => $param)
 				{
-					if (is_string($param) AND array_key_exists($param, $this->_bound))
+					if (\is_string($param) AND \array_key_exists($param, $this->_bound))
 					{
 						$params[$key] = $this->_bound[$param];
 					}
@@ -170,39 +170,39 @@ class Validation implements \ArrayAccess {
 
 				$error_name = $rule;
 
-				if (is_array($rule))
+				if (\is_array($rule))
 				{
-					if (is_string($rule[0]) AND array_key_exists($rule[0], $this->_bound))
+					if (\is_string($rule[0]) AND \array_key_exists($rule[0], $this->_bound))
 					{
 						$rule[0] = $this->_bound[$rule[0]];
 					}
 
 					$error_name = $rule[1];
-					$passed = call_user_func_array($rule, $params);
+					$passed = \call_user_func_array($rule, $params);
 				}
 				elseif ( ! is_string($rule))
 				{
 					$error_name = FALSE;
-					$passed = call_user_func_array($rule, $params);
+					$passed = \call_user_func_array($rule, $params);
 				}
-				elseif (method_exists('Valid', $rule))
+				elseif (\method_exists('Valid', $rule))
 				{
 					$method = new ReflectionMethod('Valid', $rule);
 					$passed = $method->invokeArgs(NULL, $params);
 				}
-				elseif (strpos($rule, '::') === FALSE)
+				elseif (\strpos($rule, '::') === FALSE)
 				{
 					$function = new ReflectionFunction($rule);
 					$passed = $function->invokeArgs($params);
 				}
 				else
 				{
-					list($class, $method) = explode('::', $rule, 2);
+					list($class, $method) = \explode('::', $rule, 2);
 					$method = new ReflectionMethod($class, $method);
 					$passed = $method->invokeArgs(NULL, $params);
 				}
 
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+				if ( ! \in_array($rule, $this->_empty_rules) AND ! \Hanariu\Valid::not_empty($value))
 					continue;
 
 				if ($passed === FALSE AND $error_name !== FALSE)
@@ -221,7 +221,7 @@ class Validation implements \ArrayAccess {
 
 		if (isset($benchmark))
 		{
-			Profiler::stop($benchmark);
+			\Hanariu\Profiler::stop($benchmark);
 		}
 
 		return empty($this->_errors);
@@ -251,7 +251,7 @@ class Validation implements \ArrayAccess {
 
 			if ($translate)
 			{
-				if (is_string($translate))
+				if (\is_string($translate))
 				{
 					$label = __($label, NULL, $translate);
 				}
@@ -263,23 +263,23 @@ class Validation implements \ArrayAccess {
 
 			$values = array(
 				':field' => $label,
-				':value' => Arr::get($this, $field),
+				':value' => \Hanariu\Arr::get($this, $field),
 			);
 
-			if (is_array($values[':value']))
+			if (\is_array($values[':value']))
 			{
-				$values[':value'] = implode(', ', Arr::flatten($values[':value']));
+				$values[':value'] = \implode(', ', \Hanariu\Arr::flatten($values[':value']));
 			}
 
 			if ($params)
 			{
 				foreach ($params as $key => $value)
 				{
-					if (is_array($value))
+					if (\is_array($value))
 					{
-						$value = implode(', ', Arr::flatten($value));
+						$value = \implode(', ', \Hanariu\Arr::flatten($value));
 					}
-					elseif (is_object($value))
+					elseif (\is_object($value))
 					{
 						continue;
 					}
@@ -290,7 +290,7 @@ class Validation implements \ArrayAccess {
 
 						if ($translate)
 						{
-							if (is_string($translate))
+							if (\is_string($translate))
 							{
 								$value = __($value, NULL, $translate);
 							}
@@ -304,10 +304,10 @@ class Validation implements \ArrayAccess {
 				}
 			}
 
-			if ($message = Core\Message::message($file, "{$field}.{$error}") AND is_string($message)){}
-			elseif ($message = Core\Message::message($file, "{$field}.default") AND is_string($message)){}
-			elseif ($message = Core\Message::message($file, $error) AND is_string($message)){}
-			elseif ($message = Core\Message::message('validation', $error) AND is_string($message)){}
+			if ($message = \Hanariu\Core\Message::message($file, "{$field}.{$error}") AND \is_string($message)){}
+			elseif ($message = \Hanariu\Core\Message::message($file, "{$field}.default") AND \is_string($message)){}
+			elseif ($message = \Hanariu\Core\Message::message($file, $error) AND \is_string($message)){}
+			elseif ($message = \Hanariu\Core\Message::message('validation', $error) AND \is_string($message)){}
 			else
 			{
 				$message = "{$file}.{$field}.{$error}";
@@ -315,7 +315,7 @@ class Validation implements \ArrayAccess {
 
 			if ($translate)
 			{
-				if (is_string($translate))
+				if (\is_string($translate))
 				{
 					$message = __($message, $values, $translate);
 				}
@@ -326,7 +326,7 @@ class Validation implements \ArrayAccess {
 			}
 			else
 			{
-				$message = strtr($message, $values);
+				$message = \strtr($message, $values);
 			}
 
 			$messages[$field] = $message;

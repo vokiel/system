@@ -5,7 +5,7 @@ class Strtolower{
 	public static function _strtolower($str)
 	{
 		if (\Hanariu\UTF8::is_ascii($str))
-			return strtolower($str);
+			return \strtolower($str);
 
 		static $utf8_upper_to_lower = NULL;
 
@@ -63,7 +63,7 @@ class Strtolower{
 		if ($uni === FALSE)
 			return FALSE;
 
-		for ($i = 0, $c = count($uni); $i < $c; $i++)
+		for ($i = 0, $c = \count($uni); $i < $c; $i++)
 		{
 			if (isset($utf8_upper_to_lower[$uni[$i]]))
 			{

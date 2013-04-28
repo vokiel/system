@@ -16,17 +16,17 @@ class Cache
 		$file = $this->_generate_file_name($name);
 		$dir = $this->_generate_directory($file);
 
-		if ( ! is_dir($dir))
+		if ( ! \is_dir($dir))
 		{
-			mkdir($dir, 0777, TRUE);
+			\mkdir($dir, 0777, TRUE);
 			// Set permissions (must be manually set to fix umask issues)
-			chmod($dir, 0777);
+			\chmod($dir, 0777);
 		}
 
 		// Force the data to be a string
-		$data = serialize($data);
+		$data = \serialize($data);
 
-		return (bool) file_put_contents($dir.$file, $data/*, LOCK_EX*/);
+		return (bool) \file_put_contents($dir.$file, $data/*, LOCK_EX*/);
 	}
 
 	public function read($name, $lifetime = NULL)
@@ -39,7 +39,7 @@ class Cache
 
 	protected function _generate_file_name($name)
 	{
-		return sha1($name).'.txt';
+		return \sha1($name).'.txt';
 	}
 
 	protected function _generate_directory($filename)
@@ -54,12 +54,12 @@ class Cache
 			$lifetime = $this->_cache_life;
 		}
 
-		if (is_file($file) AND (time() - filemtime($file)) < $lifetime)
+		if (\is_file($file) AND (\time() - \filemtime($file)) < $lifetime)
 		{
 			// Return the cache
 			try
 			{
-				return unserialize(file_get_contents($file));
+				return \unserialize(\file_get_contents($file));
 			}
 			catch (\Exception $e)
 			{
@@ -71,7 +71,7 @@ class Cache
 			try
 			{
 				// Cache has expired
-				unlink($file);
+				\unlink($file);
 			}
 			catch (\Exception $e)
 			{

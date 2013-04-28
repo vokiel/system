@@ -6,7 +6,7 @@ class StdErr extends Writer {
 	{
 		foreach ($messages as $message)
 		{
-			fwrite(STDERR, $this->format_message($message).PHP_EOL);
+			\fwrite(STDERR, $this->format_message($message).PHP_EOL);
 		}
 	}
 

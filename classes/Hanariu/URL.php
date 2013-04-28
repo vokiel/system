@@ -9,14 +9,14 @@ class URL {
 
 		if ($protocol === TRUE)
 		{
-			$protocol = Request::$initial;
+			$protocol = \Hanariu\Request::$initial;
 		}
 
-		if ($protocol instanceof Request)
+		if ($protocol instanceof \Hanariu\Request)
 		{
 			if ( ! $protocol->secure())
 			{
-				list($protocol) = explode('/', strtolower($protocol->protocol()));
+				list($protocol) = \explode('/', \strtolower($protocol->protocol()));
 			}
 			else
 			{
@@ -26,7 +26,7 @@ class URL {
 
 		if ( ! $protocol)
 		{
-			$protocol = parse_url($base_url, PHP_URL_SCHEME);
+			$protocol = \parse_url($base_url, PHP_URL_SCHEME);
 		}
 
 		if ($index === TRUE AND ! empty(Hanariu::$index_file))
@@ -34,16 +34,16 @@ class URL {
 			$base_url .= Hanariu::$index_file.'/';
 		}
 
-		if (is_string($protocol))
+		if (\is_string($protocol))
 		{
-			if ($port = parse_url($base_url, PHP_URL_PORT))
+			if ($port = \parse_url($base_url, PHP_URL_PORT))
 			{
 				$port = ':'.$port;
 			}
 
-			if ($domain = parse_url($base_url, PHP_URL_HOST))
+			if ($domain = \parse_url($base_url, PHP_URL_HOST))
 			{
-				$base_url = parse_url($base_url, PHP_URL_PATH);
+				$base_url = \parse_url($base_url, PHP_URL_PATH);
 			}
 			else
 			{
@@ -59,19 +59,19 @@ class URL {
 
 	public static function site($uri = '', $protocol = NULL, $index = TRUE)
 	{
-		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
+		$path = \preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
-		if ( ! UTF8::is_ascii($path))
+		if ( ! \Hanariu\UTF8::is_ascii($path))
 		{
-			$path = preg_replace_callback('~([^/]+)~', 'URL::_rawurlencode_callback', $path);
+			$path = \preg_replace_callback('~([^/]+)~', 'URL::_rawurlencode_callback', $path);
 		}
 
-		return URL::base($protocol, $index).$path;
+		return \Hanariu\URL::base($protocol, $index).$path;
 	}
 
 	protected static function _rawurlencode_callback($matches)
 	{
-		return rawurlencode($matches[0]);
+		return \rawurlencode($matches[0]);
 	}
 
 
@@ -85,7 +85,7 @@ class URL {
 			}
 			else
 			{
-				$params = Arr::merge($_GET, $params);
+				$params = \Hanariu\Arr::merge($_GET, $params);
 			}
 		}
 
@@ -94,7 +94,7 @@ class URL {
 			return '';
 		}
 
-		$query = http_build_query($params, '', '&');
+		$query = \http_build_query($params, '', '&');
 
 		return ($query === '') ? '' : ('?'.$query);
 	}
@@ -104,16 +104,16 @@ class URL {
 	{
 		if ($ascii_only === TRUE)
 		{
-			$title = UTF8::transliterate_to_ascii($title);
-			$title = preg_replace('![^'.preg_quote($separator).'a-z0-9\s]+!', '', strtolower($title));
+			$title = \Hanariu\UTF8::transliterate_to_ascii($title);
+			$title = \preg_replace('![^'.\preg_quote($separator).'a-z0-9\s]+!', '', \strtolower($title));
 		}
 		else
 		{
-			$title = preg_replace('![^'.preg_quote($separator).'\pL\pN\s]+!u', '', UTF8::strtolower($title));
+			$title = \preg_replace('![^'.\preg_quote($separator).'\pL\pN\s]+!u', '', \Hanariu\UTF8::strtolower($title));
 		}
 
-		$title = preg_replace('!['.preg_quote($separator).'\s]+!u', $separator, $title);
-		return trim($title, $separator);
+		$title = \preg_replace('!['.\preg_quote($separator).'\s]+!u', $separator, $title);
+		return \trim($title, $separator);
 	}
 
 }

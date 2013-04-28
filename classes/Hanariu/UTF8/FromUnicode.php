@@ -6,20 +6,20 @@ class FromUnicode{
 	{
 		ob_start();
 
-		$keys = array_keys($arr);
+		$keys = \array_keys($arr);
 
 		foreach ($keys as $k)
 		{
 			// ASCII range (including control chars)
 			if (($arr[$k] >= 0) AND ($arr[$k] <= 0x007f))
 			{
-				echo chr($arr[$k]);
+				echo \chr($arr[$k]);
 			}
 			// 2 byte sequence
 			elseif ($arr[$k] <= 0x07ff)
 			{
-				echo chr(0xc0 | ($arr[$k] >> 6));
-				echo chr(0x80 | ($arr[$k] & 0x003f));
+				echo \chr(0xc0 | ($arr[$k] >> 6));
+				echo \chr(0x80 | ($arr[$k] & 0x003f));
 			}
 			// Byte order mark (skip)
 			elseif ($arr[$k] == 0xFEFF)
@@ -38,17 +38,17 @@ class FromUnicode{
 			// 3 byte sequence
 			elseif ($arr[$k] <= 0xffff)
 			{
-				echo chr(0xe0 | ($arr[$k] >> 12));
-				echo chr(0x80 | (($arr[$k] >> 6) & 0x003f));
-				echo chr(0x80 | ($arr[$k] & 0x003f));
+				echo \chr(0xe0 | ($arr[$k] >> 12));
+				echo \chr(0x80 | (($arr[$k] >> 6) & 0x003f));
+				echo \chr(0x80 | ($arr[$k] & 0x003f));
 			}
 			// 4 byte sequence
 			elseif ($arr[$k] <= 0x10ffff)
 			{
-				echo chr(0xf0 | ($arr[$k] >> 18));
-				echo chr(0x80 | (($arr[$k] >> 12) & 0x3f));
-				echo chr(0x80 | (($arr[$k] >> 6) & 0x3f));
-				echo chr(0x80 | ($arr[$k] & 0x3f));
+				echo \chr(0xf0 | ($arr[$k] >> 18));
+				echo \chr(0x80 | (($arr[$k] >> 12) & 0x3f));
+				echo \chr(0x80 | (($arr[$k] >> 6) & 0x3f));
+				echo \chr(0x80 | ($arr[$k] & 0x3f));
 			}
 			// Out of range
 			else
@@ -60,8 +60,8 @@ class FromUnicode{
 			}
 		}
 
-		$result = ob_get_contents();
-		ob_end_clean();
+		$result = \ob_get_contents();
+		\ob_end_clean();
 		return $result;
 	}
 

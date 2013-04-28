@@ -9,18 +9,18 @@ abstract class Session {
 	{
 		if ($type === NULL)
 		{
-			$type = Session::$default;
+			$type = \Hanariu\Session::$default;
 		}
 
-		if ( ! isset(Session::$instances[$type]))
+		if ( ! isset(\Hanariu\Session::$instances[$type]))
 		{
 			$config = Hanariu::$config->load('session')->get($type);
-			$class = '\\Hanariu\\Session\\'.ucfirst($type);
-			Session::$instances[$type] = $session = new $class($config, $id);
-			register_shutdown_function(array($session, 'write'));
+			$class = '\\Hanariu\\Session\\'.\ucfirst($type);
+			\Hanariu\Session::$instances[$type] = $session = new $class($config, $id);
+			\register_shutdown_function(array($session, 'write'));
 		}
 
-		return Session::$instances[$type];
+		return \Hanariu\Session::$instances[$type];
 	}
 
 	protected $_name = 'session';
@@ -62,7 +62,7 @@ abstract class Session {
 
 		if ($this->_encrypted)
 		{
-			$data = Encrypt::instance($this->_encrypted)->encode($data);
+			$data = \Hanariu\Encrypt::instance($this->_encrypted)->encode($data);
 		}
 		else
 		{
@@ -91,7 +91,7 @@ abstract class Session {
 
 	public function get($key, $default = NULL)
 	{
-		return array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
+		return \array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
 	}
 
 
@@ -123,7 +123,7 @@ abstract class Session {
 
 	public function delete($key)
 	{
-		$args = func_get_args();
+		$args = \func_get_args();
 
 		foreach ($args as $key)
 		{
@@ -140,11 +140,11 @@ abstract class Session {
 
 		try
 		{
-			if (is_string($data = $this->_read($id)))
+			if (\is_string($data = $this->_read($id)))
 			{
 				if ($this->_encrypted)
 				{
-					$data = Encrypt::instance($this->_encrypted)->decode($data);
+					$data = \Hanariu\Encrypt::instance($this->_encrypted)->decode($data);
 				}
 				else
 				{
@@ -157,10 +157,10 @@ abstract class Session {
 		}
 		catch (Exception $e)
 		{
-			throw new Session\Exception('Error reading session data.', NULL, \Hanariu\Session\Exception::SESSION_CORRUPT);
+			throw new \Hanariu\Session\Exception('Error reading session data.', NULL, \Hanariu\Session\Exception::SESSION_CORRUPT);
 		}
 
-		if (is_array($data))
+		if (\is_array($data))
 		{
 			$this->_data = $data;
 		}
@@ -173,20 +173,20 @@ abstract class Session {
 
 	public function write()
 	{
-		if (headers_sent() OR $this->_destroyed)
+		if (\headers_sent() OR $this->_destroyed)
 		{
 			return FALSE;
 		}
 
-		$this->_data['last_active'] = time();
+		$this->_data['last_active'] = \time();
 
 		try
 		{
 			return $this->_write();
 		}
-		catch (Exception $e)
+		catch (\Hanariu\Exception $e)
 		{
-			Hanariu::$log->add(Log::ERROR, Exception::text($e))->write();
+			Hanariu::$log->add(\Hanariu\Log::ERROR, \Hanariu\Exception::text($e))->write();
 
 			return FALSE;
 		}
@@ -218,22 +218,22 @@ abstract class Session {
 
 	protected function _serialize($data)
 	{
-		return serialize($data);
+		return \serialize($data);
 	}
 
 	protected function _unserialize($data)
 	{
-		return unserialize($data);
+		return \unserialize($data);
 	}
 
 	protected function _encode($data)
 	{
-		return base64_encode($data);
+		return \base64_encode($data);
 	}
 
 	protected function _decode($data)
 	{
-		return base64_decode($data);
+		return \base64_decode($data);
 	}
 
 	abstract protected function _read($id = NULL);

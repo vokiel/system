@@ -5,7 +5,7 @@ class Form {
 
 	public static function open($action = NULL, array $attributes = NULL)
 	{
-		if ($action instanceof Request)
+		if ($action instanceof \Hanariu\Request)
 		{
 			$action = $action->uri();
 		}
@@ -14,10 +14,10 @@ class Form {
 		{
 			$action = '';
 		}
-		elseif (strpos($action, '://') === FALSE)
+		elseif (\strpos($action, '://') === FALSE)
 		{
 			// Make the URI absolute
-			$action = URL::site($action);
+			$action = \Hanariu\URL::site($action);
 		}
 
 		$attributes['action'] = $action;
@@ -28,7 +28,7 @@ class Form {
 			$attributes['method'] = 'post';
 		}
 
-		return '<form'.HTML::attributes($attributes).'>';
+		return '<form'.\Hanariu\HTML::attributes($attributes).'>';
 	}
 
 
@@ -48,28 +48,28 @@ class Form {
 			$attributes['type'] = 'text';
 		}
 
-		return '<input'.HTML::attributes($attributes).' />';
+		return '<input'.\Hanariu\HTML::attributes($attributes).' />';
 	}
 
 	public static function hidden($name, $value = NULL, array $attributes = NULL)
 	{
 		$attributes['type'] = 'hidden';
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 	public static function password($name, $value = NULL, array $attributes = NULL)
 	{
 		$attributes['type'] = 'password';
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 	public static function file($name, array $attributes = NULL)
 	{
 		$attributes['type'] = 'file';
 
-		return Form::input($name, NULL, $attributes);
+		return \Hanariu\Form::input($name, NULL, $attributes);
 	}
 
 	public static function checkbox($name, $value = NULL, $checked = FALSE, array $attributes = NULL)
@@ -81,7 +81,7 @@ class Form {
 			$attributes[] = 'checked';
 		}
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 	public static function radio($name, $value = NULL, $checked = FALSE, array $attributes = NULL)
@@ -93,7 +93,7 @@ class Form {
 			$attributes[] = 'checked';
 		}
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 
@@ -102,7 +102,7 @@ class Form {
 		$attributes['name'] = $name;
 		$attributes += array('rows' => 10, 'cols' => 50);
 
-		return '<textarea'.HTML::attributes($attributes).'>'.HTML::chars($body, $double_encode).'</textarea>';
+		return '<textarea'.\Hanariu\HTML::attributes($attributes).'>'.\Hanariu\HTML::chars($body, $double_encode).'</textarea>';
 	}
 
 
@@ -110,12 +110,12 @@ class Form {
 	{
 		$attributes['name'] = $name;
 
-		if (is_array($selected))
+		if (\is_array($selected))
 		{
 			$attributes[] = 'multiple';
 		}
 
-		if ( ! is_array($selected))
+		if ( ! \is_array($selected))
 		{
 			if ($selected === NULL)
 			{
@@ -135,7 +135,7 @@ class Form {
 		{
 			foreach ($options as $value => $name)
 			{
-				if (is_array($name))
+				if (\is_array($name))
 				{
 					$group = array('label' => $value);
 
@@ -152,37 +152,37 @@ class Form {
 							$option[] = 'selected';
 						}
 
-						$_options[] = '<option'.HTML::attributes($option).'>'.HTML::chars($_name, FALSE).'</option>';
+						$_options[] = '<option'.\Hanariu\HTML::attributes($option).'>'.\Hanariu\HTML::chars($_name, FALSE).'</option>';
 					}
 
-					$_options = "\n".implode("\n", $_options)."\n";
-					$options[$value] = '<optgroup'.HTML::attributes($group).'>'.$_options.'</optgroup>';
+					$_options = "\n".\implode("\n", $_options)."\n";
+					$options[$value] = '<optgroup'.\Hanariu\HTML::attributes($group).'>'.$_options.'</optgroup>';
 				}
 				else
 				{
 					$value = (string) $value;
 					$option = array('value' => $value);
 
-					if (in_array($value, $selected))
+					if (\in_array($value, $selected))
 					{
 						$option[] = 'selected';
 					}
 
-					$options[$value] = '<option'.HTML::attributes($option).'>'.HTML::chars($name, FALSE).'</option>';
+					$options[$value] = '<option'.\Hanariu\HTML::attributes($option).'>'.\Hanariu\HTML::chars($name, FALSE).'</option>';
 				}
 			}
 
-			$options = "\n".implode("\n", $options)."\n";
+			$options = "\n".\implode("\n", $options)."\n";
 		}
 
-		return '<select'.HTML::attributes($attributes).'>'.$options.'</select>';
+		return '<select'.\Hanariu\HTML::attributes($attributes).'>'.$options.'</select>';
 	}
 
 	public static function submit($name, $value, array $attributes = NULL)
 	{
 		$attributes['type'] = 'submit';
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 
@@ -190,23 +190,23 @@ class Form {
 	{
 		if ( ! empty($attributes['src']))
 		{
-			if (strpos($attributes['src'], '://') === FALSE)
+			if (\strpos($attributes['src'], '://') === FALSE)
 			{
 				// Add the base URL
-				$attributes['src'] = URL::base($index).$attributes['src'];
+				$attributes['src'] = \Hanariu\URL::base($index).$attributes['src'];
 			}
 		}
 
 		$attributes['type'] = 'image';
 
-		return Form::input($name, $value, $attributes);
+		return \Hanariu\Form::input($name, $value, $attributes);
 	}
 
 
 	public static function button($name, $body, array $attributes = NULL)
 	{
 		$attributes['name'] = $name;
-		return '<button'.HTML::attributes($attributes).'>'.$body.'</button>';
+		return '<button'.\Hanariu\HTML::attributes($attributes).'>'.$body.'</button>';
 	}
 
 
@@ -214,16 +214,16 @@ class Form {
 	{
 		if ($text === NULL)
 		{
-			$text = ucwords(preg_replace('/[\W_]+/', ' ', $input));
+			$text = \ucwords(\preg_replace('/[\W_]+/', ' ', $input));
 		}
 
 		$attributes['for'] = $input;
-		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
+		return '<label'.\Hanariu\HTML::attributes($attributes).'>'.$text.'</label>';
 	}
 
 	public static function open_fieldset($attributes = NULL)
 	{
-		return '<fieldset'.HTML::attributes($attributes).'>';
+		return '<fieldset'.\Hanariu\HTML::attributes($attributes).'>';
 	}
 
 
@@ -237,9 +237,9 @@ class Form {
 		if ($text === NULL)
 		{
 			// Use the input name as the text
-			$text = ucwords(preg_replace('/[\W_]+/', ' ', $input));
+			$text = \ucwords(\preg_replace('/[\W_]+/', ' ', $input));
 		}
 
-		return '<legend'.HTML::attributes($attributes).'>'.$text.'</legend>';
+		return '<legend'.\Hanariu\HTML::attributes($attributes).'>'.$text.'</legend>';
 	}
 }

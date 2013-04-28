@@ -4,44 +4,44 @@ class Valid {
 
 	public static function not_empty($value)
 	{
-		if (is_object($value) AND $value instanceof \ArrayObject)
+		if (\is_object($value) AND $value instanceof \ArrayObject)
 		{
 			$value = $value->getArrayCopy();
 		}
 
-		return ! in_array($value, array(NULL, FALSE, '', array()), TRUE);
+		return ! \in_array($value, array(NULL, FALSE, '', array()), TRUE);
 	}
 
 	public static function regex($value, $expression)
 	{
-		return (bool) preg_match($expression, (string) $value);
+		return (bool) \preg_match($expression, (string) $value);
 	}
 
 	public static function min_length($value, $length)
 	{
-		return UTF8::strlen($value) >= $length;
+		return \Hanariu\UTF8::strlen($value) >= $length;
 	}
 
 
 	public static function max_length($value, $length)
 	{
-		return UTF8::strlen($value) <= $length;
+		return \Hanariu\UTF8::strlen($value) <= $length;
 	}
 
 
 	public static function exact_length($value, $length)
 	{
-		if (is_array($length))
+		if (\is_array($length))
 		{
 			foreach ($length as $strlen)
 			{
-				if (UTF8::strlen($value) === $strlen)
+				if (\Hanariu\UTF8::strlen($value) === $strlen)
 					return TRUE;
 			}
 			return FALSE;
 		}
 
-		return UTF8::strlen($value) === $length;
+		return \Hanariu\UTF8::strlen($value) === $length;
 	}
 
 	public static function equals($value, $required)
@@ -52,7 +52,7 @@ class Valid {
 
 	public static function email($email, $strict = FALSE)
 	{
-		if (UTF8::strlen($email) > 254)
+		if (\Hanariu\UTF8::strlen($email) > 254)
 		{
 			return FALSE;
 		}
@@ -78,16 +78,16 @@ class Valid {
 			$expression = '/^[-_a-z0-9\'+*$^&%=~!?{}]++(?:\.[-_a-z0-9\'+*$^&%=~!?{}]+)*+@(?:(?![-.])[-a-z0-9.]+(?<![-.])\.[a-z]{2,6}|\d{1,3}(?:\.\d{1,3}){3})$/iD';
 		}
 
-		return (bool) preg_match($expression, (string) $email);
+		return (bool) \preg_match($expression, (string) $email);
 	}
 
 
 	public static function email_domain($email)
 	{
-		if ( ! Valid::not_empty($email))
+		if ( ! \Hanariu\Valid::not_empty($email))
 			return FALSE; 
 
-		return (bool) checkdnsrr(preg_replace('/^[^@]++@/', '', $email), 'MX');
+		return (bool) checkdnsrr(\preg_replace('/^[^@]++@/', '', $email), 'MX');
 	}
 
 
@@ -132,11 +132,11 @@ class Valid {
 		if ( ! isset($matches[1]))
 			return TRUE;
 
-		if (strlen($matches[1]) > 253)
+		if (\strlen($matches[1]) > 253)
 			return FALSE;
 
-		$tld = ltrim(substr($matches[1], (int) strrpos($matches[1], '.')), '.');
-		return ctype_alpha($tld[0]);
+		$tld = \ltrim(\substr($matches[1], (int) \strrpos($matches[1], '.')), '.');
+		return \ctype_alpha($tld[0]);
 	}
 
 	public static function ip($ip, $allow_private = TRUE)
@@ -148,23 +148,23 @@ class Valid {
 			$flags = $flags | FILTER_FLAG_NO_PRIV_RANGE;
 		}
 
-		return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
+		return (bool) \filter_var($ip, FILTER_VALIDATE_IP, $flags);
 	}
 
 	public static function credit_card($number, $type = NULL)
 	{
-		if (($number = preg_replace('/\D+/', '', $number)) === '')
+		if (($number = \preg_replace('/\D+/', '', $number)) === '')
 			return FALSE;
 
 		if ($type == NULL)
 		{
 			$type = 'default';
 		}
-		elseif (is_array($type))
+		elseif (\is_array($type))
 		{
 			foreach ($type as $t)
 			{
-				if (Valid::credit_card($number, $t))
+				if (\Hanariu\Valid::credit_card($number, $t))
 					return TRUE;
 			}
 
@@ -172,23 +172,23 @@ class Valid {
 		}
 
 		$cards = Hanariu::$config->load('credit_cards');
-		$type = strtolower($type);
+		$type = \strtolower($type);
 
 		if ( ! isset($cards[$type]))
 			return FALSE;
 
-		$length = strlen($number);
+		$length = \strlen($number);
 
-		if ( ! in_array($length, preg_split('/\D+/', $cards[$type]['length'])))
+		if ( ! \in_array($length, \preg_split('/\D+/', $cards[$type]['length'])))
 			return FALSE;
 
-		if ( ! preg_match('/^'.$cards[$type]['prefix'].'/', $number))
+		if ( ! \preg_match('/^'.$cards[$type]['prefix'].'/', $number))
 			return FALSE;
 
 		if ($cards[$type]['luhn'] == FALSE)
 			return TRUE;
 
-		return Valid::luhn($number);
+		return \Hanariu\Valid::luhn($number);
 	}
 
 	public static function luhn($number)
@@ -196,22 +196,22 @@ class Valid {
 
 		$number = (string) $number;
 
-		if ( ! ctype_digit($number))
+		if ( ! \ctype_digit($number))
 		{
 			return FALSE;
 		}
 
-		$length = strlen($number);
+		$length = \strlen($number);
 		$checksum = 0;
 
 		for ($i = $length - 1; $i >= 0; $i -= 2)
 		{
-			$checksum += substr($number, $i, 1);
+			$checksum += \substr($number, $i, 1);
 		}
 
 		for ($i = $length - 2; $i >= 0; $i -= 2)
 		{
-			$double = substr($number, $i, 1) * 2;
+			$double = \substr($number, $i, 1) * 2;
 			$checksum += ($double >= 10) ? ($double - 9) : $double;
 		}
 
@@ -221,18 +221,18 @@ class Valid {
 
 	public static function phone($number, $lengths = NULL)
 	{
-		if ( ! is_array($lengths))
+		if ( ! \is_array($lengths))
 		{
 			$lengths = array(7,10,11);
 		}
 
-		$number = preg_replace('/\D+/', '', $number);
-		return in_array(strlen($number), $lengths);
+		$number = \preg_replace('/\D+/', '', $number);
+		return \in_array(\strlen($number), $lengths);
 	}
 
 	public static function date($str)
 	{
-		return (strtotime($str) !== FALSE);
+		return (\strtotime($str) !== FALSE);
 	}
 
 
@@ -242,11 +242,11 @@ class Valid {
 
 		if ($utf8 === TRUE)
 		{
-			return (bool) preg_match('/^\pL++$/uD', $str);
+			return (bool) \preg_match('/^\pL++$/uD', $str);
 		}
 		else
 		{
-			return ctype_alpha($str);
+			return \ctype_alpha($str);
 		}
 	}
 
@@ -254,11 +254,11 @@ class Valid {
 	{
 		if ($utf8 === TRUE)
 		{
-			return (bool) preg_match('/^[\pL\pN]++$/uD', $str);
+			return (bool) \preg_match('/^[\pL\pN]++$/uD', $str);
 		}
 		else
 		{
-			return ctype_alnum($str);
+			return \ctype_alnum($str);
 		}
 	}
 
@@ -273,7 +273,7 @@ class Valid {
 			$regex = '/^[-a-z0-9_]++$/iD';
 		}
 
-		return (bool) preg_match($regex, $str);
+		return (bool) \preg_match($regex, $str);
 	}
 
 
@@ -281,19 +281,19 @@ class Valid {
 	{
 		if ($utf8 === TRUE)
 		{
-			return (bool) preg_match('/^\pN++$/uD', $str);
+			return (bool) \preg_match('/^\pN++$/uD', $str);
 		}
 		else
 		{
-			return (is_int($str) AND $str >= 0) OR ctype_digit($str);
+			return (\is_int($str) AND $str >= 0) OR \ctype_digit($str);
 		}
 	}
 
 
 	public static function numeric($str)
 	{
-		list($decimal) = array_values(localeconv());
-		return (bool) preg_match('/^-?+(?=.*[0-9])[0-9]*+'.preg_quote($decimal).'?+[0-9]*+$/D', (string) $str);
+		list($decimal) = \array_values(\localeconv());
+		return (bool) \preg_match('/^-?+(?=.*[0-9])[0-9]*+'.\preg_quote($decimal).'?+[0-9]*+$/D', (string) $str);
 	}
 
 	public static function range($number, $min, $max, $step = NULL)
@@ -323,14 +323,14 @@ class Valid {
 			$digits = '+';
 		}
 
-		list($decimal) = array_values(localeconv());
+		list($decimal) = \array_values(\localeconv());
 
-		return (bool) preg_match('/^[+-]?[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.( (int) $places).'}$/D', $str);
+		return (bool) \preg_match('/^[+-]?[0-9]'.$digits.\preg_quote($decimal).'[0-9]{'.( (int) $places).'}$/D', $str);
 	}
 
 	public static function color($str)
 	{
-		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
+		return (bool) \preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
 	public static function matches($array, $field, $match)

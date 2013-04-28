@@ -5,12 +5,12 @@ class Substr{
 	public static function _substr($str, $offset, $length = NULL)
 	{
 		if (\Hanariu\UTF8::is_ascii($str))
-			return ($length === NULL) ? substr($str, $offset) : substr($str, $offset, $length);
+			return ($length === NULL) ? \substr($str, $offset) : \substr($str, $offset, $length);
 
 		// Normalize params
 		$str    = (string) $str;
 		$strlen = \Hanariu\UTF8::strlen($str);
-		$offset = (int) ($offset < 0) ? max(0, $strlen + $offset) : $offset; // Normalize to positive offset
+		$offset = (int) ($offset < 0) ? \max(0, $strlen + $offset) : $offset; // Normalize to positive offset
 		$length = ($length === NULL) ? NULL : (int) $length;
 
 		// Impossible
@@ -43,7 +43,7 @@ class Substr{
 		elseif ($length > 0)
 		{
 			// Reduce length so that it can't go beyond the end of the string
-			$length = min($strlen - $offset, $length);
+			$length = \min($strlen - $offset, $length);
 
 			$x = (int) ($length / 65535);
 			$y = (int) ($length % 65535);
@@ -61,7 +61,7 @@ class Substr{
 			$regex .= '.{'.$y.'}';
 		}
 
-		preg_match('/'.$regex.'/us', $str, $matches);
+		\preg_match('/'.$regex.'/us', $str, $matches);
 		return $matches[1];
 	}
 

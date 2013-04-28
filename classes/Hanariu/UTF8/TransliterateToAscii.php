@@ -30,9 +30,9 @@ class TransliterateToAscii{
 				);
 			}
 
-			$str = str_replace(
-				array_keys($utf8_lower_accents),
-				array_values($utf8_lower_accents),
+			$str = \str_replace(
+				\array_keys($utf8_lower_accents),
+				\array_values($utf8_lower_accents),
 				$str
 			);
 		}
@@ -60,9 +60,9 @@ class TransliterateToAscii{
 				);
 			}
 
-			$str = str_replace(
-				array_keys($utf8_upper_accents),
-				array_values($utf8_upper_accents),
+			$str = \str_replace(
+				\array_keys($utf8_upper_accents),
+				\array_values($utf8_upper_accents),
 				$str
 			);
 		}

@@ -1,11 +1,11 @@
 <?php namespace Hanariu;
 
-class Response implements HTTP\Response {
+class Response implements \Hanariu\HTTP\Response {
 
 
 	public static function factory(array $config = array())
 	{
-		return new Response($config);
+		return new \Hanariu\Response($config);
 	}
 
 	public static $messages = array(
@@ -67,13 +67,14 @@ class Response implements HTTP\Response {
 	protected $_body = '';
 	protected $_cookies = array();
 	protected $_protocol;
+
 	public function __construct(array $config = array())
 	{
-		$this->_header = new HTTP\Header;
+		$this->_header = new \Hanariu\HTTP\Header;
 
 		foreach ($config as $key => $value)
 		{
-			if (property_exists($this, $key))
+			if (\property_exists($this, $key))
 			{
 				if ($key == '_header')
 				{
@@ -105,13 +106,13 @@ class Response implements HTTP\Response {
 	{
 		if ($protocol)
 		{
-			$this->_protocol = strtoupper($protocol);
+			$this->_protocol = \strtoupper($protocol);
 			return $this;
 		}
 
 		if ($this->_protocol === NULL)
 		{
-			$this->_protocol = HTTP::$protocol;
+			$this->_protocol = \Hanariu\HTTP::$protocol;
 		}
 
 		return $this->_protocol;
@@ -124,14 +125,14 @@ class Response implements HTTP\Response {
 		{
 			return $this->_status;
 		}
-		elseif (array_key_exists($status, Response::$messages))
+		elseif (\array_key_exists($status, \Hanariu\Response::$messages))
 		{
 			$this->_status = (int) $status;
 			return $this;
 		}
 		else
 		{
-			throw new \Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
+			throw new \Hanariu\Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
 		}
 	}
 
@@ -141,14 +142,14 @@ class Response implements HTTP\Response {
 		{
 			return $this->_header;
 		}
-		elseif (is_array($key))
+		elseif (\is_array($key))
 		{
 			$this->_header->exchangeArray($key);
 			return $this;
 		}
 		elseif ($value === NULL)
 		{
-			return Arr::get($this->_header, $key);
+			return \Hanariu\Arr::get($this->_header, $key);
 		}
 		else
 		{
@@ -159,36 +160,36 @@ class Response implements HTTP\Response {
 
 	public function content_length()
 	{
-		return strlen($this->body());
+		return \strlen($this->body());
 	}
 
 	public function cookie($key = NULL, $value = NULL)
 	{
 		if ($key === NULL)
 			return $this->_cookies;
-		elseif ( ! is_array($key) AND ! $value)
-			return Arr::get($this->_cookies, $key);
+		elseif ( ! \is_array($key) AND ! $value)
+			return \Hanariu\Arr::get($this->_cookies, $key);
 
 		if (is_array($key))
 		{
-			reset($key);
-			while (list($_key, $_value) = each($key))
+			\reset($key);
+			while (list($_key, $_value) = \each($key))
 			{
 				$this->cookie($_key, $_value);
 			}
 		}
 		else
 		{
-			if ( ! is_array($value))
+			if ( ! \is_array($value))
 			{
 				$value = array(
 					'value' => $value,
-					'expiration' => Cookie::$expiration
+					'expiration' => \Hanariu\Cookie::$expiration
 				);
 			}
 			elseif ( ! isset($value['expiration']))
 			{
-				$value['expiration'] = Cookie::$expiration;
+				$value['expiration'] = \Hanariu\Cookie::$expiration;
 			}
 
 			$this->_cookies[$key] = $value;
@@ -231,16 +232,16 @@ class Response implements HTTP\Response {
 
 		if ($this->_cookies)
 		{
-			if (extension_loaded('http'))
+			if (\extension_loaded('http'))
 			{
-				$this->_header['set-cookie'] = http_build_cookie($this->_cookies);
+				$this->_header['set-cookie'] = \http_build_cookie($this->_cookies);
 			}
 			else
 			{
 				$cookies = array();
 				foreach ($this->_cookies as $key => $value)
 				{
-					$string = $key.'='.$value['value'].'; expires='.date('l, d M Y H:i:s T', $value['expiration']);
+					$string = $key.'='.$value['value'].'; expires='.\date('l, d M Y H:i:s T', $value['expiration']);
 					$cookies[] = $string;
 				}
 
@@ -248,7 +249,7 @@ class Response implements HTTP\Response {
 			}
 		}
 
-		$output = $this->_protocol.' '.$this->_status.' '.Response::$messages[$this->_status]."\r\n";
+		$output = $this->_protocol.' '.$this->_status.' '.\Hanariu\Response::$messages[$this->_status]."\r\n";
 		$output .= (string) $this->_header;
 		$output .= $this->_body;
 
@@ -260,10 +261,10 @@ class Response implements HTTP\Response {
 	{
 	    if ($this->_body === '')
 		{
-			throw new Exception('No response yet associated with request - cannot auto generate resource ETag');
+			throw new \Hanariu\Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
-		return '"'.sha1($this->render()).'"';
+		return '"'.\sha1($this->render()).'"';
 	}
 
 	protected function _parse_byte_range()
@@ -273,7 +274,7 @@ class Response implements HTTP\Response {
 			return FALSE;
 		}
 
-		preg_match_all('/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/', $_SERVER['HTTP_RANGE'], $matches, PREG_SET_ORDER);
+		\preg_match_all('/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/', $_SERVER['HTTP_RANGE'], $matches, PREG_SET_ORDER);
 
 		return $matches[0];
 	}
@@ -299,9 +300,9 @@ class Response implements HTTP\Response {
 			}
 		}
 
-		$start = abs(intval($start));
-		$end = min(abs(intval($end)), $size - 1);
-		$start = ($end < $start) ? 0 : max($start, 0);
+		$start = \abs(\intval($start));
+		$end = \min(\abs(\intval($end)), $size - 1);
+		$start = ($end < $start) ? 0 : \max($start, 0);
 
 		return array($start, $end);
 	}

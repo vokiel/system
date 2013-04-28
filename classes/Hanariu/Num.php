@@ -67,7 +67,7 @@ class Num {
 
 	public static function format($number, $places, $monetary = FALSE)
 	{
-		$info = localeconv();
+		$info = \localeconv();
 
 		if ($monetary)
 		{
@@ -80,19 +80,19 @@ class Num {
 			$thousands = $info['thousands_sep'];
 		}
 
-		return number_format($number, $places, $decimal, $thousands);
+		return \number_format($number, $places, $decimal, $thousands);
 	}
 
 	public static function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = TRUE)
 	{
-		if (version_compare(PHP_VERSION, '5.3', '>=') AND $native)
+		if (\version_compare(PHP_VERSION, '5.3', '>=') AND $native)
 		{
 			return round($value, $precision, $mode);
 		}
 
 		if ($mode === self::ROUND_HALF_UP)
 		{
-			return round($value, $precision);
+			return \round($value, $precision);
 		}
 		else
 		{
@@ -104,7 +104,7 @@ class Num {
 				case self::ROUND_HALF_EVEN:
 				case self::ROUND_HALF_ODD:
 					// Check if we have a rounding tie, otherwise we can just call round()
-					if (($value * $factor) - floor($value * $factor) === 0.5)
+					if (($value * $factor) - \floor($value * $factor) === 0.5)
 					{
 						if ($mode === self::ROUND_HALF_DOWN)
 						{
@@ -112,22 +112,22 @@ class Num {
 						}
 						else
 						{
-							$up = ( ! ( ! (floor($value * $factor) & 1)) === ($mode === self::ROUND_HALF_EVEN));
+							$up = ( ! ( ! (\floor($value * $factor) & 1)) === ($mode === self::ROUND_HALF_EVEN));
 						}
 
 						if ($up)
 						{
-							$value = ceil($value * $factor);
+							$value = \ceil($value * $factor);
 						}
 						else
 						{
-							$value = floor($value * $factor);
+							$value = \floor($value * $factor);
 						}
 						return $value / $factor;
 					}
 					else
 					{
-						return round($value, $precision);
+						return \round($value, $precision);
 					}
 				break;
 			}
@@ -136,17 +136,17 @@ class Num {
 
 	public static function bytes($size)
 	{
-		$size = trim( (string) $size);
-		$accepted = implode('|', array_keys(Num::$byte_units));
+		$size = \trim( (string) $size);
+		$accepted = \implode('|', \array_keys(\Hanariu\Num::$byte_units));
 		$pattern = '/^([0-9]+(?:\.[0-9]+)?)('.$accepted.')?$/Di';
-		if ( ! preg_match($pattern, $size, $matches))
-			throw new Exception('The byte unit size, ":size", is improperly formatted.', array(
+		if ( ! \preg_match($pattern, $size, $matches))
+			throw new \Hanariu\Exception('The byte unit size, ":size", is improperly formatted.', array(
 				':size' => $size,
 			));
 
 		$size = (float) $matches[1];
-		$unit = Arr::get($matches, 2, 'B');
-		$bytes = $size * pow(2, Num::$byte_units[$unit]);
+		$unit = \Hanariu\Arr::get($matches, 2, 'B');
+		$bytes = $size * \pow(2, \Hanariu\Num::$byte_units[$unit]);
 		return $bytes;
 	}
 

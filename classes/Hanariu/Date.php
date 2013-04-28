@@ -19,12 +19,12 @@ class Date {
 	{
 		if ($local === NULL)
 		{
-			$local = date_default_timezone_get();
+			$local = \date_default_timezone_get();
 		}
 
-		if (is_int($now))
+		if (\is_int($now))
 		{
-			$now = date(\DateTime::RFC2822, $now);
+			$now = \date(\DateTime::RFC2822, $now);
 		}
 
 		$zone_remote = new \DateTimeZone($remote);
@@ -46,7 +46,7 @@ class Date {
 
 		for ($i = $start; $i < $end; $i += $step)
 		{
-			$seconds[$i] = sprintf('%02d', $i);
+			$seconds[$i] = \sprintf('%02d', $i);
 		}
 
 		return $seconds;
@@ -54,7 +54,7 @@ class Date {
 
 	public static function minutes($step = 5)
 	{
-		return Date::seconds($step);
+		return \Hanariu\Date::seconds($step);
 	}
 
 
@@ -93,7 +93,7 @@ class Date {
 	public static function adjust($hour, $ampm)
 	{
 		$hour = (int) $hour;
-		$ampm = strtolower($ampm);
+		$ampm = \strtolower($ampm);
 
 		switch ($ampm)
 		{
@@ -111,7 +111,7 @@ class Date {
 			break;
 		}
 
-		return sprintf('%02d', $hour);
+		return \sprintf('%02d', $hour);
 	}
 
 	public static function days($month, $year = FALSE)
@@ -120,7 +120,7 @@ class Date {
 
 		if ($year === FALSE)
 		{
-			$year = date('Y');
+			$year = \date('Y');
 		}
 
 		$month = (int) $month;
@@ -129,7 +129,7 @@ class Date {
 		if (empty($months[$year][$month]))
 		{
 			$months[$year][$month] = array();
-			$total = date('t', mktime(1, 0, 0, $month, 1, $year)) + 1;
+			$total = \date('t', \mktime(1, 0, 0, $month, 1, $year)) + 1;
 
 			for ($i = 1; $i < $total; $i++)
 			{
@@ -144,16 +144,16 @@ class Date {
 	{
 		$months = array();
 
-		if ($format === Date::MONTHS_LONG OR $format === Date::MONTHS_SHORT)
+		if ($format === \Hanariu\Date::MONTHS_LONG OR $format === \Hanariu\Date::MONTHS_SHORT)
 		{
 			for ($i = 1; $i <= 12; ++$i)
 			{
-				$months[$i] = strftime($format, mktime(0, 0, 0, $i, 1));
+				$months[$i] = \strftime($format, \mktime(0, 0, 0, $i, 1));
 			}
 		}
 		else
 		{
-			$months = Date::hours();
+			$months = \Hanariu\Date::hours();
 		}
 
 		return $months;
@@ -161,8 +161,8 @@ class Date {
 
 	public static function years($start = FALSE, $end = FALSE)
 	{
-		$start = ($start === FALSE) ? (date('Y') - 5) : (int) $start;
-		$end   = ($end   === FALSE) ? (date('Y') + 5) : (int) $end;
+		$start = ($start === FALSE) ? (\date('Y') - 5) : (int) $start;
+		$end   = ($end   === FALSE) ? (\date('Y') + 5) : (int) $end;
 
 		$years = array();
 
@@ -176,16 +176,16 @@ class Date {
 
 	public static function span($remote, $local = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
 	{
-		$output = trim(strtolower( (string) $output));
+		$output = \trim(\strtolower( (string) $output));
 
 		if ( ! $output)
 		{
 			return FALSE;
 		}
 
-		$output = preg_split('/[^a-z]+/', $output);
-		$output = array_combine($output, array_fill(0, count($output), 0));
-		extract(array_flip($output), EXTR_SKIP);
+		$output = \preg_split('/[^a-z]+/', $output);
+		$output = \array_combine($output, \array_fill(0, \count($output), 0));
+		\extract(\array_flip($output), EXTR_SKIP);
 
 		if ($local === NULL)
 		{
@@ -193,36 +193,36 @@ class Date {
 		}
 
 		// Calculate timespan (seconds)
-		$timespan = abs($remote - $local);
+		$timespan = \abs($remote - $local);
 
 		if (isset($output['years']))
 		{
-			$timespan -= Date::YEAR * ($output['years'] = (int) floor($timespan / Date::YEAR));
+			$timespan -= \Hanariu\Date::YEAR * ($output['years'] = (int) \floor($timespan / Date::YEAR));
 		}
 
 		if (isset($output['months']))
 		{
-			$timespan -= Date::MONTH * ($output['months'] = (int) floor($timespan / Date::MONTH));
+			$timespan -= \Hanariu\Date::MONTH * ($output['months'] = (int) \floor($timespan / Date::MONTH));
 		}
 
 		if (isset($output['weeks']))
 		{
-			$timespan -= Date::WEEK * ($output['weeks'] = (int) floor($timespan / Date::WEEK));
+			$timespan -= \Hanariu\Date::WEEK * ($output['weeks'] = (int) \floor($timespan / Date::WEEK));
 		}
 
 		if (isset($output['days']))
 		{
-			$timespan -= Date::DAY * ($output['days'] = (int) floor($timespan / Date::DAY));
+			$timespan -= \Hanariu\Date::DAY * ($output['days'] = (int) \floor($timespan / Date::DAY));
 		}
 
 		if (isset($output['hours']))
 		{
-			$timespan -= Date::HOUR * ($output['hours'] = (int) floor($timespan / Date::HOUR));
+			$timespan -= \Hanariu\Date::HOUR * ($output['hours'] = (int) \floor($timespan / Date::HOUR));
 		}
 
 		if (isset($output['minutes']))
 		{
-			$timespan -= Date::MINUTE * ($output['minutes'] = (int) floor($timespan / Date::MINUTE));
+			$timespan -= \Hanariu\Date::MINUTE * ($output['minutes'] = (int) \floor($timespan / Date::MINUTE));
 		}
 
 		if (isset($output['seconds']))
@@ -230,9 +230,9 @@ class Date {
 			$output['seconds'] = $timespan;
 		}
 
-		if (count($output) === 1)
+		if (\count($output) === 1)
 		{
-			return array_pop($output);
+			return \array_pop($output);
 		}
 
 		return $output;
@@ -240,84 +240,84 @@ class Date {
 
 	public static function fuzzy_span($timestamp, $local_timestamp = NULL)
 	{
-		$local_timestamp = ($local_timestamp === NULL) ? time() : (int) $local_timestamp;
+		$local_timestamp = ($local_timestamp === NULL) ? \time() : (int) $local_timestamp;
 
 		// Determine the difference in seconds
-		$offset = abs($local_timestamp - $timestamp);
+		$offset = \abs($local_timestamp - $timestamp);
 
-		if ($offset <= Date::MINUTE)
+		if ($offset <= \Hanariu\Date::MINUTE)
 		{
 			$span = 'moments';
 		}
-		elseif ($offset < (Date::MINUTE * 20))
+		elseif ($offset < (\Hanariu\Date::MINUTE * 20))
 		{
 			$span = 'a few minutes';
 		}
-		elseif ($offset < Date::HOUR)
+		elseif ($offset < \Hanariu\Date::HOUR)
 		{
 			$span = 'less than an hour';
 		}
-		elseif ($offset < (Date::HOUR * 4))
+		elseif ($offset < (\Hanariu\Date::HOUR * 4))
 		{
 			$span = 'a couple of hours';
 		}
-		elseif ($offset < Date::DAY)
+		elseif ($offset < \Hanariu\Date::DAY)
 		{
 			$span = 'less than a day';
 		}
-		elseif ($offset < (Date::DAY * 2))
+		elseif ($offset < (\Hanariu\Date::DAY * 2))
 		{
 			$span = 'about a day';
 		}
-		elseif ($offset < (Date::DAY * 4))
+		elseif ($offset < (\Hanariu\Date::DAY * 4))
 		{
 			$span = 'a couple of days';
 		}
-		elseif ($offset < Date::WEEK)
+		elseif ($offset < \Hanariu\Date::WEEK)
 		{
 			$span = 'less than a week';
 		}
-		elseif ($offset < (Date::WEEK * 2))
+		elseif ($offset < (\Hanariu\Date::WEEK * 2))
 		{
 			$span = 'about a week';
 		}
-		elseif ($offset < Date::MONTH)
+		elseif ($offset < \Hanariu\Date::MONTH)
 		{
 			$span = 'less than a month';
 		}
-		elseif ($offset < (Date::MONTH * 2))
+		elseif ($offset < (\Hanariu\Date::MONTH * 2))
 		{
 			$span = 'about a month';
 		}
-		elseif ($offset < (Date::MONTH * 4))
+		elseif ($offset < (\Hanariu\Date::MONTH * 4))
 		{
 			$span = 'a couple of months';
 		}
-		elseif ($offset < Date::YEAR)
+		elseif ($offset < \Hanariu\Date::YEAR)
 		{
 			$span = 'less than a year';
 		}
-		elseif ($offset < (Date::YEAR * 2))
+		elseif ($offset < (\Hanariu\Date::YEAR * 2))
 		{
 			$span = 'about a year';
 		}
-		elseif ($offset < (Date::YEAR * 4))
+		elseif ($offset < (\Hanariu\Date::YEAR * 4))
 		{
 			$span = 'a couple of years';
 		}
-		elseif ($offset < (Date::YEAR * 8))
+		elseif ($offset < (\Hanariu\Date::YEAR * 8))
 		{
 			$span = 'a few years';
 		}
-		elseif ($offset < (Date::YEAR * 12))
+		elseif ($offset < (\Hanariu\Date::YEAR * 12))
 		{
 			$span = 'about a decade';
 		}
-		elseif ($offset < (Date::YEAR * 24))
+		elseif ($offset < (\Hanariu\Date::YEAR * 24))
 		{
 			$span = 'a couple of decades';
 		}
-		elseif ($offset < (Date::YEAR * 64))
+		elseif ($offset < (\Hanariu\Date::YEAR * 64))
 		{
 			$span = 'several decades';
 		}
@@ -340,7 +340,7 @@ class Date {
 
 	public static function unix2dos($timestamp = FALSE)
 	{
-		$timestamp = ($timestamp === FALSE) ? getdate() : getdate($timestamp);
+		$timestamp = ($timestamp === FALSE) ? \getdate() : \getdate($timestamp);
 
 		if ($timestamp['year'] < 1980)
 		{
@@ -363,15 +363,15 @@ class Date {
 		$mon  = ($timestamp >> 21) & 0x0f;
 		$year = ($timestamp >> 25) & 0x7f;
 
-		return mktime($hrs, $min, $sec, $mon, $day, $year + 1980);
+		return \mktime($hrs, $min, $sec, $mon, $day, $year + 1980);
 	}
 
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
 	{
-		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
-		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
+		$timestamp_format = ($timestamp_format == NULL) ? \Hanariu\Date::$timestamp_format : $timestamp_format;
+		$timezone         = ($timezone === NULL) ? \Hanariu\Date::$timezone : $timezone;
 
-		$tz   = new \DateTimeZone($timezone ? $timezone : date_default_timezone_get());
+		$tz   = new \DateTimeZone($timezone ? $timezone : \date_default_timezone_get());
 		$time = new \DateTime($datetime_str, $tz);
 
 		if ($time->getTimeZone()->getName() !== $tz->getName())

@@ -48,7 +48,7 @@ class Hanariu {
 			Hanariu::$profiling = (bool) $settings['profile'];
 		}
 
-		ob_start();
+		\ob_start();
 
 		if (isset($settings['errors']))
 		{
@@ -57,18 +57,18 @@ class Hanariu {
 
 		if (Hanariu::$errors === TRUE)
 		{
-			set_exception_handler(array('Hanariu\\Exception', 'handler'));
-			set_error_handler(array('Hanariu\\Core\\Handler', 'error_handler'));
+			\set_exception_handler(array('Hanariu\\Exception', 'handler'));
+			\set_error_handler(array('Hanariu\\Core\\Handler', 'error_handler'));
 		}
 
-		if (Hanariu::$environment == Hanariu::DEVELOPMENT AND extension_loaded('xdebug'))
+		if (Hanariu::$environment == Hanariu::DEVELOPMENT AND \extension_loaded('xdebug'))
 		{
-		    ini_set('xdebug.collect_params', 3);
+		    \ini_set('xdebug.collect_params', 3);
 		}
 
 		register_shutdown_function(array('Hanariu\\Core\\Handler', 'shutdown_handler'));
 
-		if (ini_get('register_globals'))
+		if (\ini_get('register_globals'))
 		{
 			Hanariu::globals();
 		}
@@ -79,25 +79,25 @@ class Hanariu {
 		}
 
 		Hanariu::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-		Hanariu::$safe_mode = (bool) ini_get('safe_mode');
+		Hanariu::$safe_mode = (bool) \ini_get('safe_mode');
 
 		if (isset($settings['cache_dir']))
 		{
-			if ( ! is_dir($settings['cache_dir']))
+			if ( ! \is_dir($settings['cache_dir']))
 			{
 				try
 				{
-					mkdir($settings['cache_dir'], 0755, TRUE);
-					chmod($settings['cache_dir'], 0755);
+					\mkdir($settings['cache_dir'], 0755, TRUE);
+					\chmod($settings['cache_dir'], 0755);
 				}
 				catch (\Exception $e)
 				{
-					throw new Exception('Could not create cache directory :dir',
-						array(':dir' => Debug::path($settings['cache_dir'])));
+					throw new \Hanariu\Exception('Could not create cache directory :dir',
+						array(':dir' => \Hanariu\Debug::path($settings['cache_dir'])));
 				}
 			}
 
-			Hanariu::$cache_dir = realpath($settings['cache_dir']);
+			Hanariu::$cache_dir = \realpath($settings['cache_dir']);
 		}
 		else
 		{
@@ -107,7 +107,7 @@ class Hanariu {
 		if ( ! is_writable(Hanariu::$cache_dir))
 		{
 			throw new Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path(Hanariu::$cache_dir)));
+				array(':dir' => \Hanariu\Debug::path(Hanariu::$cache_dir)));
 		}
 
 		if (isset($settings['cache_life']))
@@ -122,43 +122,43 @@ class Hanariu {
 
 		if (Hanariu::$caching === TRUE)
 		{
-			Hanariu::$_files = Core\Cache::cache('Hanariu::find_file()');
+			Hanariu::$_files = \Hanariu\Core\Cache::cache('Hanariu::find_file()');
 		}
 
 		if (isset($settings['charset']))
 		{
-			Hanariu::$charset = strtolower($settings['charset']);
+			Hanariu::$charset = \strtolower($settings['charset']);
 		}
 
 		if (function_exists('mb_internal_encoding'))
 		{
-			mb_internal_encoding(Hanariu::$charset);
+			\mb_internal_encoding(Hanariu::$charset);
 		}
 
 		if (isset($settings['base_url']))
 		{
-			Hanariu::$base_url = rtrim($settings['base_url'], '/').'/';
+			Hanariu::$base_url = \rtrim($settings['base_url'], '/').'/';
 		}
 
 		if (isset($settings['index_file']))
 		{
-			Hanariu::$index_file = trim($settings['index_file'], '/');
+			Hanariu::$index_file = \trim($settings['index_file'], '/');
 		}
 
-		Hanariu::$magic_quotes = (version_compare(PHP_VERSION, '5.4') < 0 AND get_magic_quotes_gpc());
+		Hanariu::$magic_quotes = (\version_compare(PHP_VERSION, '5.4') < 0 AND \get_magic_quotes_gpc());
 
 		$_GET    = Hanariu::sanitize($_GET);
 		$_POST   = Hanariu::sanitize($_POST);
 		$_COOKIE = Hanariu::sanitize($_COOKIE);
 
-		if ( ! Hanariu::$log instanceof Log)
+		if ( ! Hanariu::$log instanceof \Hanariu\Log)
 		{
-			Hanariu::$log = Log::instance();
+			Hanariu::$log = \Hanariu\Log::instance();
 		}
 
-		if ( ! Hanariu::$config instanceof Config)
+		if ( ! Hanariu::$config instanceof \Hanariu\Config)
 		{
-			Hanariu::$config = new Config;
+			Hanariu::$config = new \Hanariu\Config;
 		}
 	}
 
@@ -166,12 +166,12 @@ class Hanariu {
 	{
 		if (Hanariu::$_init)
 		{
-			spl_autoload_unregister(array('Hanariu', 'auto_load'));
+			\spl_autoload_unregister(array('Hanariu', 'auto_load'));
 
 			if (Hanariu::$errors)
 			{
-				restore_error_handler();
-				restore_exception_handler();
+				\restore_error_handler();
+				\restore_exception_handler();
 			}
 
 			Hanariu::$log = Hanariu::$config = NULL;
@@ -190,8 +190,8 @@ class Hanariu {
 			exit(1);
 		}
 
-		$global_variables = array_keys($GLOBALS);
-		$global_variables = array_diff($global_variables, array(
+		$global_variables = \array_keys($GLOBALS);
+		$global_variables = \array_diff($global_variables, array(
 			'_COOKIE',
 			'_ENV',
 			'_GET',
@@ -211,23 +211,23 @@ class Hanariu {
 
 	public static function sanitize($value)
 	{
-		if (is_array($value) OR is_object($value))
+		if (\is_array($value) OR \is_object($value))
 		{
 			foreach ($value as $key => $val)
 			{
 				$value[$key] = Hanariu::sanitize($val);
 			}
 		}
-		elseif (is_string($value))
+		elseif (\is_string($value))
 		{
 			if (Hanariu::$magic_quotes === TRUE)
 			{
-				$value = stripslashes($value);
+				$value = \stripslashes($value);
 			}
 
-			if (strpos($value, "\r") !== FALSE)
+			if (\strpos($value, "\r") !== FALSE)
 			{
-				$value = str_replace(array("\r\n", "\r"), "\n", $value);
+				$value = \str_replace(array("\r\n", "\r"), "\n", $value);
 			}
 		}
 
@@ -245,15 +245,15 @@ class Hanariu {
 
 		foreach ($modules as $name => $path)
 		{
-			if (is_dir($path))
+			if (\is_dir($path))
 			{
-				$paths[] = $modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
+				$paths[] = $modules[$name] = \realpath($path).DIRECTORY_SEPARATOR;
 			}
 			else
 			{
-				throw new Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
+				throw new \Hanariu\Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
 					':module' => $name,
-					':path'   => Debug::path($path),
+					':path'   => \Hanariu\Debug::path($path),
 				));
 			}
 		}

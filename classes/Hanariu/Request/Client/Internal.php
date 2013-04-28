@@ -12,7 +12,7 @@ class Internal extends \Hanariu\Request\Client {
 
 		if ($directory)
 		{
-			$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'\\';
+			$prefix .= \str_replace(array('\\', '/'), '_', \trim($directory, '/')).'\\';
 		}
 
 		if (\Hanariu\Hanariu::$profiling)
@@ -32,7 +32,7 @@ class Internal extends \Hanariu\Request\Client {
 
 		try
 		{
-			if ( ! class_exists($prefix.$controller))
+			if ( ! \class_exists($prefix.$controller))
 			{
 				throw \Hanariu\HTTP\Exception::factory(404,
 					'The requested URL :uri  where prefix and controller are  :pc was not found on this server.',

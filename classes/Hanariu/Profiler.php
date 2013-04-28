@@ -9,14 +9,14 @@ class Profiler {
 	{
 		static $counter = 0;
 
-		$token = 'kp/'.base_convert($counter++, 10, 32);
+		$token = 'kp/'.\base_convert($counter++, 10, 32);
 
 		Profiler::$_marks[$token] = array
 		(
-			'group' => strtolower($group),
+			'group' => \strtolower($group),
 			'name'  => (string) $name,
-			'start_time'   => microtime(TRUE),
-			'start_memory' => memory_get_usage(),
+			'start_time'   => \microtime(TRUE),
+			'start_memory' => \memory_get_usage(),
 			'stop_time'    => FALSE,
 			'stop_memory'  => FALSE,
 		);
@@ -26,20 +26,20 @@ class Profiler {
 
 	public static function stop($token)
 	{
-		Profiler::$_marks[$token]['stop_time']   = microtime(TRUE);
-		Profiler::$_marks[$token]['stop_memory'] = memory_get_usage();
+		\Hanariu\Profiler::$_marks[$token]['stop_time']   = \microtime(TRUE);
+		\Hanariu\Profiler::$_marks[$token]['stop_memory'] = \memory_get_usage();
 	}
 
 	public static function delete($token)
 	{
-		unset(Profiler::$_marks[$token]);
+		unset(\Hanariu\Profiler::$_marks[$token]);
 	}
 
 	public static function groups()
 	{
 		$groups = array();
 
-		foreach (Profiler::$_marks as $token => $mark)
+		foreach (\Hanariu\Profiler::$_marks as $token => $mark)
 		{
 			$groups[$mark['group']][$mark['name']][] = $token;
 		}
@@ -59,7 +59,7 @@ class Profiler {
 
 		foreach ($tokens as $token)
 		{
-			list($time, $memory) = Profiler::total($token);
+			list($time, $memory) = \Hanariu\Profiler::total($token);
 
 			if ($max['time'] === NULL OR $time > $max['time'])
 			{
@@ -86,7 +86,7 @@ class Profiler {
 			$total['memory'] += $memory;
 		}
 
-		$count = count($tokens);
+		$count = \count($tokens);
 
 		$average = array(
 			'time' => $total['time'] / $count,
@@ -102,8 +102,8 @@ class Profiler {
 	public static function group_stats($groups = NULL)
 	{
 		$groups = ($groups === NULL)
-			? Profiler::groups()
-			: array_intersect_key(Profiler::groups(), array_flip( (array) $groups));
+			? \Hanariu\Profiler::groups()
+			: \array_intersect_key(\Hanariu\Profiler::groups(), \array_flip( (array) $groups));
 
 		$stats = array();
 
@@ -111,7 +111,7 @@ class Profiler {
 		{
 			foreach ($names as $name => $tokens)
 			{
-				$_stats = Profiler::stats($tokens);
+				$_stats = \Hanariu\Profiler::stats($tokens);
 				$stats[$group][$name] = $_stats['total'];
 			}
 		}
@@ -152,7 +152,7 @@ class Profiler {
 				$groups[$group]['total']['memory'] += $total['memory'];
 			}
 
-			$count = count($names);
+			$count = \count($names);
 			$groups[$group]['average']['time']   = $groups[$group]['total']['time'] / $count;
 			$groups[$group]['average']['memory'] = $groups[$group]['total']['memory'] / $count;
 		}
@@ -162,12 +162,12 @@ class Profiler {
 
 	public static function total($token)
 	{
-		$mark = Profiler::$_marks[$token];
+		$mark = \Hanariu\Profiler::$_marks[$token];
 
 		if ($mark['stop_time'] === FALSE)
 		{
-			$mark['stop_time']   = microtime(TRUE);
-			$mark['stop_memory'] = memory_get_usage();
+			$mark['stop_time']   = \microtime(TRUE);
+			$mark['stop_memory'] = \memory_get_usage();
 		}
 
 		return array
@@ -182,7 +182,7 @@ class Profiler {
 
 		$stats = Core\Cache::read('profiler_application_stats');
 
-		if ( ! is_array($stats) OR $stats['count'] > Profiler::$rollover)
+		if ( ! \is_array($stats) OR $stats['count'] > \Hanariu\Profiler::$rollover)
 		{
 			$stats = array(
 				'min'   => array(
@@ -197,8 +197,8 @@ class Profiler {
 				'count' => 0);
 		}
 
-		$time = microtime(TRUE) - HANARIU_START_TIME;
-		$memory = memory_get_usage() - HANARIU_START_MEMORY;
+		$time = \microtime(TRUE) - HANARIU_START_TIME;
+		$memory = \memory_get_usage() - HANARIU_START_MEMORY;
 		if ($stats['max']['time'] === NULL OR $time > $stats['max']['time'])
 		{
 			$stats['max']['time'] = $time;
@@ -222,7 +222,7 @@ class Profiler {
 		$stats['average'] = array(
 			'time'   => $stats['total']['time'] / $stats['count'],
 			'memory' => $stats['total']['memory'] / $stats['count']);
-		Core\Cache::save('profiler_application_stats', $stats);
+		\Hanariu\Core\Cache::save('profiler_application_stats', $stats);
 
 		$stats['current']['time']   = $time;
 		$stats['current']['memory'] = $memory;

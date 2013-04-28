@@ -7,21 +7,21 @@ class Debug {
 		if (func_num_args() === 0)
 			return;
 
-		$variables = func_get_args();
+		$variables = \func_get_args();
 
 		$output = array();
 		foreach ($variables as $var)
 		{
-			$output[] = Debug::_dump($var, 1024);
+			$output[] = \Hanariu\Debug::_dump($var, 1024);
 		}
 
-		return '<pre class="debug">'.implode("\n", $output).'</pre>';
+		return '<pre class="debug">'.\implode("\n", $output).'</pre>';
 	}
 
 
 	public static function dump($value, $length = 128, $level_recursion = 10)
 	{
-		return Debug::_dump($value, $length, $level_recursion);
+		return \Hanariu\Debug::_dump($value, $length, $level_recursion);
 	}
 
 	protected static function _dump( & $var, $length = 128, $limit = 10, $level = 0)
@@ -30,34 +30,34 @@ class Debug {
 		{
 			return '<small>NULL</small>';
 		}
-		elseif (is_bool($var))
+		elseif (\is_bool($var))
 		{
 			return '<small>bool</small> '.($var ? 'TRUE' : 'FALSE');
 		}
-		elseif (is_float($var))
+		elseif (\is_float($var))
 		{
 			return '<small>float</small> '.$var;
 		}
-		elseif (is_resource($var))
+		elseif (\is_resource($var))
 		{
-			if (($type = get_resource_type($var)) === 'stream' AND $meta = stream_get_meta_data($var))
+			if (($type = \get_resource_type($var)) === 'stream' AND $meta = \stream_get_meta_data($var))
 			{
-				$meta = stream_get_meta_data($var);
+				$meta = \stream_get_meta_data($var);
 
 				if (isset($meta['uri']))
 				{
 					$file = $meta['uri'];
 
-					if (function_exists('stream_is_local'))
+					if (\function_exists('stream_is_local'))
 					{
 						// Only exists on PHP >= 5.2.4
 						if (stream_is_local($file))
 						{
-							$file = Debug::path($file);
+							$file = \Hanariu\Debug::path($file);
 						}
 					}
 
-					return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, Hanariu::$charset);
+					return '<small>resource</small><span>('.$type.')</span> '.\htmlspecialchars($file, ENT_NOQUOTES, Hanariu::$charset);
 				}
 			}
 			else
@@ -65,32 +65,32 @@ class Debug {
 				return '<small>resource</small><span>('.$type.')</span>';
 			}
 		}
-		elseif (is_string($var))
+		elseif (\is_string($var))
 		{
-			$var = UTF8::clean($var, Hanariu::$charset);
+			$var = \Hanariu\UTF8::clean($var, Hanariu::$charset);
 
-			if (UTF8::strlen($var) > $length)
+			if (\Hanariu\UTF8::strlen($var) > $length)
 			{
-				$str = htmlspecialchars(UTF8::substr($var, 0, $length), ENT_NOQUOTES, Hanariu::$charset).'&nbsp;&hellip;';
+				$str = \htmlspecialchars(\Hanariu\UTF8::substr($var, 0, $length), ENT_NOQUOTES, Hanariu::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
-				$str = htmlspecialchars($var, ENT_NOQUOTES, Hanariu::$charset);
+				$str = \htmlspecialchars($var, ENT_NOQUOTES, Hanariu::$charset);
 			}
 
-			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
+			return '<small>string</small><span>('.\strlen($var).')</span> "'.$str.'"';
 		}
-		elseif (is_array($var))
+		elseif (\is_array($var))
 		{
 			$output = array();
-			$space = str_repeat($s = '    ', $level);
+			$space = \str_repeat($s = '    ', $level);
 
 			static $marker;
 
 			if ($marker === NULL)
 			{
 				// Make a unique marker
-				$marker = uniqid("\x00");
+				$marker = \uniqid("\x00");
 			}
 
 			if (empty($var))
@@ -110,10 +110,10 @@ class Debug {
 					if ($key === $marker) continue;
 					if ( ! is_int($key))
 					{
-						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, Hanariu::$charset).'"';
+						$key = '"'.\htmlspecialchars($key, ENT_NOQUOTES, Hanariu::$charset).'"';
 					}
 
-					$output[] = "$space$s$key => ".Debug::_dump($val, $length, $limit, $level + 1);
+					$output[] = "$space$s$key => ".\Hanariu\Debug::_dump($val, $length, $limit, $level + 1);
 				}
 				unset($var[$marker]);
 
@@ -124,15 +124,15 @@ class Debug {
 				$output[] = "(\n$space$s...\n$space)";
 			}
 
-			return '<small>array</small><span>('.count($var).')</span> '.implode("\n", $output);
+			return '<small>array</small><span>('.\count($var).')</span> '.\implode("\n", $output);
 		}
-		elseif (is_object($var))
+		elseif (\is_object($var))
 		{
 			$array = (array) $var;
 			$output = array();
-			$space = str_repeat($s = '    ', $level);
+			$space = \str_repeat($s = '    ', $level);
 
-			$hash = spl_object_hash($var);
+			$hash = \spl_object_hash($var);
 
 			// Objects that are being dumped
 			static $objects = array();
@@ -158,14 +158,14 @@ class Debug {
 						$access = '<small>'.(($key[1] === '*') ? 'protected' : 'private').'</small>';
 
 						// Remove the access level from the variable name
-						$key = substr($key, strrpos($key, "\x00") + 1);
+						$key = \substr($key, \strrpos($key, "\x00") + 1);
 					}
 					else
 					{
 						$access = '<small>public</small>';
 					}
 
-					$output[] = "$space$s$access $key => ".Debug::_dump($val, $length, $limit, $level + 1);
+					$output[] = "$space$s$access $key => ".\Hanariu\Debug::_dump($val, $length, $limit, $level + 1);
 				}
 				unset($objects[$hash]);
 
@@ -177,32 +177,32 @@ class Debug {
 				$output[] = "{\n$space$s...\n$space}";
 			}
 
-			return '<small>object</small> <span>'.get_class($var).'('.count($array).')</span> '.implode("\n", $output);
+			return '<small>object</small> <span>'.\get_class($var).'('.\count($array).')</span> '.\implode("\n", $output);
 		}
 		else
 		{
-			return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, Hanariu::$charset);
+			return '<small>'.\gettype($var).'</small> '.\htmlspecialchars(\print_r($var, TRUE), ENT_NOQUOTES, Hanariu::$charset);
 		}
 	}
 
 
 	public static function path($file)
 	{
-		if (strpos($file, APPPATH) === 0)
+		if (\strpos($file, APPPATH) === 0)
 		{
-			$file = 'APPPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(APPPATH));
+			$file = 'APPPATH'.DIRECTORY_SEPARATOR.\substr($file, \strlen(APPPATH));
 		}
-		elseif (strpos($file, SYSPATH) === 0)
+		elseif (\strpos($file, SYSPATH) === 0)
 		{
-			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(SYSPATH));
+			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.\substr($file, \strlen(SYSPATH));
 		}
-		elseif (strpos($file, MODPATH) === 0)
+		elseif (\strpos($file, MODPATH) === 0)
 		{
-			$file = 'MODPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(MODPATH));
+			$file = 'MODPATH'.DIRECTORY_SEPARATOR.\substr($file, \strlen(MODPATH));
 		}
-		elseif (strpos($file, DOCROOT) === 0)
+		elseif (\strpos($file, DOCROOT) === 0)
 		{
-			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.substr($file, strlen(DOCROOT));
+			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.\substr($file, \strlen(DOCROOT));
 		}
 
 		return $file;
@@ -210,18 +210,18 @@ class Debug {
 
 	public static function source($file, $line_number, $padding = 5)
 	{
-		if ( ! $file OR ! is_readable($file))
+		if ( ! $file OR ! \is_readable($file))
 		{
 
 			return FALSE;
 		}
 
-		$file = fopen($file, 'r');
+		$file = \fopen($file, 'r');
 		$line = 0;
 		$range = array('start' => $line_number - $padding, 'end' => $line_number + $padding);
-		$format = '% '.strlen($range['end']).'d';
+		$format = '% '.\strlen($range['end']).'d';
 		$source = '';
-		while (($row = fgets($file)) !== FALSE)
+		while (($row = \fgets($file)) !== FALSE)
 		{
 			// Increment the line number
 			if (++$line > $range['end'])
@@ -229,8 +229,8 @@ class Debug {
 
 			if ($line >= $range['start'])
 			{
-				$row = htmlspecialchars($row, ENT_NOQUOTES, Hanariu::$charset);
-				$row = '<span class="number">'.sprintf($format, $line).'</span> '.$row;
+				$row = \htmlspecialchars($row, ENT_NOQUOTES, Hanariu::$charset);
+				$row = '<span class="number">'.\sprintf($format, $line).'</span> '.$row;
 
 				if ($line === $line_number)
 				{
@@ -245,7 +245,7 @@ class Debug {
 			}
 		}
 
-		fclose($file);
+		\fclose($file);
 
 		return '<pre class="source"><code>'.$source.'</code></pre>';
 	}
@@ -255,7 +255,7 @@ class Debug {
 		if ($trace === NULL)
 		{
 			// Start a new trace
-			$trace = debug_backtrace();
+			$trace = \debug_backtrace();
 		}
 
 		$statements = array('include', 'include_once', 'require', 'require_once');
@@ -270,7 +270,7 @@ class Debug {
 
 			if (isset($step['file']) AND isset($step['line']))
 			{
-				$source = Debug::source($step['file'], $step['line']);
+				$source = \Hanariu\Debug::source($step['file'], $step['line']);
 			}
 
 			if (isset($step['file']))
@@ -298,7 +298,7 @@ class Debug {
 			}
 			elseif (isset($step['args']))
 			{
-				if ( ! function_exists($step['function']) OR strpos($step['function'], '{closure}') !== FALSE)
+				if ( ! \function_exists($step['function']) OR \strpos($step['function'], '{closure}') !== FALSE)
 				{
 					$params = NULL;
 				}
@@ -306,7 +306,7 @@ class Debug {
 				{
 					if (isset($step['class']))
 					{
-						if (method_exists($step['class'], $step['function']))
+						if (\method_exists($step['class'], $step['function']))
 						{
 							$reflection = new \ReflectionMethod($step['class'], $step['function']);
 						}

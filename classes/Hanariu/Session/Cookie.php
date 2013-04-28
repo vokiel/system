@@ -4,7 +4,7 @@ class Cookie extends \Hanariu\Session {
 
 	protected function _read($id = NULL)
 	{
-		return Cookie::get($this->_name, NULL);
+		return \Hanariu\Cookie::get($this->_name, NULL);
 	}
 
 	protected function _regenerate()
@@ -14,7 +14,7 @@ class Cookie extends \Hanariu\Session {
 
 	protected function _write()
 	{
-		return Cookie::set($this->_name, $this->__toString(), $this->_lifetime);
+		return \Hanariu\Cookie::set($this->_name, $this->__toString(), $this->_lifetime);
 	}
 
 	protected function _restart()
@@ -24,7 +24,7 @@ class Cookie extends \Hanariu\Session {
 
 	protected function _destroy()
 	{
-		return Cookie::delete($this->_name);
+		return \Hanariu\Cookie::delete($this->_name);
 	}
 
 }
