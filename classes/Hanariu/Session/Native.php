@@ -4,21 +4,21 @@ class Native extends \Hanariu\Session {
 
 	public function id()
 	{
-		return session_id();
+		return \session_id();
 	}
 
 	protected function _read($id = NULL)
 	{
-		session_set_cookie_params($this->_lifetime, \Hanariu\Cookie::$path, \Hanariu\Cookie::$domain, \Hanariu\Cookie::$secure, \Hanariu\Cookie::$httponly);
-		session_cache_limiter(FALSE);
-		session_name($this->_name);
+		\session_set_cookie_params($this->_lifetime, \Hanariu\Cookie::$path, \Hanariu\Cookie::$domain, \Hanariu\Cookie::$secure, \Hanariu\Cookie::$httponly);
+		\session_cache_limiter(FALSE);
+		\session_name($this->_name);
 
 		if ($id)
 		{
-			session_id($id);
+			\session_id($id);
 		}
 
-		session_start();
+		\session_start();
 		$this->_data =& $_SESSION;
 
 		return NULL;
@@ -26,27 +26,27 @@ class Native extends \Hanariu\Session {
 
 	protected function _regenerate()
 	{
-		session_regenerate_id();
-		return session_id();
+		\session_regenerate_id();
+		return \session_id();
 	}
 
 	protected function _write()
 	{
-		session_write_close();
+		\session_write_close();
 		return TRUE;
 	}
 
 	protected function _restart()
 	{
-		$status = session_start();
+		$status = \session_start();
 		$this->_data =& $_SESSION;
 		return $status;
 	}
 
 	protected function _destroy()
 	{
-		session_destroy();
-		$status = ! session_id();
+		\session_destroy();
+		$status = ! \session_id();
 
 		if ($status)
 		{

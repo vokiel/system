@@ -18,7 +18,7 @@ abstract class Client {
 	{
 		foreach ($params as $key => $value)
 		{
-			if (method_exists($this, $key))
+			if (\method_exists($this, $key))
 			{
 				$this->$key($value);
 			}
@@ -46,7 +46,7 @@ abstract class Client {
 		{
 			if ($response->headers($header))
 			{
-				$cb_result = call_user_func($callback, $request, $response, $this);
+				$cb_result = \call_user_func($callback, $request, $response, $this);
 
 				if ($cb_result instanceof \Hanariu\Request)
 				{
@@ -160,7 +160,7 @@ abstract class Client {
 
 	}
 
-	public function assign_client_properties(Client $client)
+	public function assign_client_properties(\Hanariu\Client $client)
 	{
 		$client->cache($this->cache());
 		$client->follow($this->follow());
@@ -171,9 +171,9 @@ abstract class Client {
 	}
 
 
-	public static function on_header_location(\Hanariu\Request $request, \Hanariu\Response $response, Client $client)
+	public static function on_header_location(\Hanariu\Request $request, \Hanariu\Response $response, \Hanariu\Client $client)
 	{
-		if ($client->follow() AND in_array($response->status(), array(201, 301, 302, 303, 307)))
+		if ($client->follow() AND \in_array($response->status(), array(201, 301, 302, 303, 307)))
 		{
 			switch ($response->status())
 			{

@@ -8,12 +8,12 @@ abstract class External extends \Hanariu\Request\Client {
 	{
 		if ($client === NULL)
 		{
-			$client = External::$client;
+			$client = \Hanariu\External::$client;
 		}
 
 		$client = new $client($params);
 
-		if ( ! $client instanceof External)
+		if ( ! $client instanceof \Hanariu\External)
 		{
 			throw new \Hanariu\Exception('Selected client is not a Request_Client_External object.');
 		}
@@ -25,7 +25,7 @@ abstract class External extends \Hanariu\Request\Client {
 
 	public function execute_request(\Hanariu\Request $request, \Hanariu\Response $response)
 	{
-		if (Hanariu::$profiling)
+		if (\Hanariu\Hanariu::$profiling)
 		{
 			$benchmark = '"'.$request->uri().'"';
 
@@ -53,7 +53,7 @@ abstract class External extends \Hanariu\Request\Client {
 		{
 			$response = $this->_send_message($request, $response);
 		}
-		catch (\Exception $e)
+		catch (\Hanariu\Exception $e)
 		{
 			\Hanariu\Request::$current = $previous;
 
@@ -80,7 +80,7 @@ abstract class External extends \Hanariu\Request\Client {
 		if ($key === NULL)
 			return $this->_options;
 
-		if (is_array($key))
+		if (\is_array($key))
 		{
 			$this->_options = $key;
 		}

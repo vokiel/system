@@ -7,11 +7,11 @@ class Strpos{
 		$offset = (int) $offset;
 
 		if (\Hanariu\UTF8::is_ascii($str) AND \Hanariu\UTF8::is_ascii($search))
-			return strpos($str, $search, $offset);
+			return \strpos($str, $search, $offset);
 
 		if ($offset == 0)
 		{
-			$array = explode($search, $str, 2);
+			$array = \explode($search, $str, 2);
 			return isset($array[1]) ? \Hanariu\UTF8::strlen($array[0]) : FALSE;
 		}
 

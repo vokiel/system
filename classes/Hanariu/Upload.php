@@ -8,39 +8,39 @@ class Upload {
 
 	public static function save(array $file, $filename = NULL, $directory = NULL, $chmod = 0644)
 	{
-		if ( ! isset($file['tmp_name']) OR ! is_uploaded_file($file['tmp_name']))
+		if ( ! isset($file['tmp_name']) OR ! \is_uploaded_file($file['tmp_name']))
 		{
 			return FALSE;
 		}
 
 		if ($filename === NULL)
 		{
-			$filename = uniqid().$file['name'];
+			$filename = \uniqid().$file['name'];
 		}
 
-		if (Upload::$remove_spaces === TRUE)
+		if (\Hanariu\Upload::$remove_spaces === TRUE)
 		{
-			$filename = preg_replace('/\s+/u', '_', $filename);
+			$filename = \preg_replace('/\s+/u', '_', $filename);
 		}
 
 		if ($directory === NULL)
 		{
-			$directory = Upload::$default_directory;
+			$directory = \Hanariu\Upload::$default_directory;
 		}
 
-		if ( ! is_dir($directory) OR ! is_writable(realpath($directory)))
+		if ( ! \is_dir($directory) OR ! \is_writable(\realpath($directory)))
 		{
-			throw new Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path($directory)));
+			throw new \Hanariu\Exception('Directory :dir must be writable',
+				array(':dir' => \Hanariu\Debug::path($directory)));
 		}
 
-		$filename = realpath($directory).DIRECTORY_SEPARATOR.$filename;
+		$filename = \realpath($directory).DIRECTORY_SEPARATOR.$filename;
 
-		if (move_uploaded_file($file['tmp_name'], $filename))
+		if (\move_uploaded_file($file['tmp_name'], $filename))
 		{
 			if ($chmod !== FALSE)
 			{
-				chmod($filename, $chmod);
+				\chmod($filename, $chmod);
 			}
 
 			// Return new file path
@@ -64,7 +64,7 @@ class Upload {
 		return (isset($file['error'])
 			AND isset($file['tmp_name'])
 			AND $file['error'] === UPLOAD_ERR_OK
-			AND is_uploaded_file($file['tmp_name']));
+			AND \is_uploaded_file($file['tmp_name']));
 	}
 
 	public static function type(array $file, array $allowed)
@@ -72,9 +72,9 @@ class Upload {
 		if ($file['error'] !== UPLOAD_ERR_OK)
 			return TRUE;
 
-		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+		$ext = \strtolower(\pathinfo($file['name'], PATHINFO_EXTENSION));
 
-		return in_array($ext, $allowed);
+		return \in_array($ext, $allowed);
 	}
 
 	public static function size(array $file, $size)
@@ -89,17 +89,17 @@ class Upload {
 			return TRUE;
 		}
 
-		$size = Num::bytes($size);
+		$size = \Hanariu\Num::bytes($size);
 		return ($file['size'] <= $size);
 	}
 
 	public static function image(array $file, $max_width = NULL, $max_height = NULL, $exact = FALSE)
 	{
-		if (Upload::not_empty($file))
+		if (\Hanariu\Upload::not_empty($file))
 		{
 			try
 			{
-				list($width, $height) = getimagesize($file['tmp_name']);
+				list($width, $height) = \getimagesize($file['tmp_name']);
 			}
 			catch (\ErrorException $e)
 			{

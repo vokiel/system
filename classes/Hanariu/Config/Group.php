@@ -16,7 +16,7 @@ class Group extends \ArrayObject {
 
 	public function __toString()
 	{
-		return serialize($this->getArrayCopy());
+		return \serialize($this->getArrayCopy());
 	}
 
 	public function as_array()

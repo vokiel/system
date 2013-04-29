@@ -14,51 +14,51 @@ class Route {
 
 	public static function set($name, $uri = NULL, $regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri, $regex);
+		return \Hanariu\Route::$_routes[$name] = new \Hanariu\Route($uri, $regex);
 	}
 
 	public static function get($name)
 	{
-		if ( ! isset(Route::$_routes[$name]))
+		if ( ! isset(\Hanariu\Route::$_routes[$name]))
 		{
-			throw new Exception('The requested route does not exist: :route',
+			throw new \Hanariu\Exception('The requested route does not exist: :route',
 				array(':route' => $name));
 		}
 
-		return Route::$_routes[$name];
+		return \Hanariu\Route::$_routes[$name];
 	}
 
 	public static function all()
 	{
-		return Route::$_routes;
+		return \Hanariu\Route::$_routes;
 	}
 
 	public static function name(Route $route)
 	{
-		return array_search($route, Route::$_routes);
+		return \array_search($route, \Hanariu\Route::$_routes);
 	}
 
 	public static function compile($uri, array $regex = NULL)
 	{
-		$expression = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
+		$expression = \preg_replace('#'.\Hanariu\Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
 
-		if (strpos($expression, '(') !== FALSE)
+		if (\strpos($expression, '(') !== FALSE)
 		{
-			$expression = str_replace(array('(', ')'), array('(?:', ')?'), $expression);
+			$expression = \str_replace(array('(', ')'), array('(?:', ')?'), $expression);
 		}
 
-		$expression = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $expression);
+		$expression = \str_replace(array('<', '>'), array('(?P<', '>'.\Hanariu\Route::REGEX_SEGMENT.')'), $expression);
 
 		if ($regex)
 		{
 			$search = $replace = array();
 			foreach ($regex as $key => $value)
 			{
-				$search[]  = "<$key>".Route::REGEX_SEGMENT;
+				$search[]  = "<$key>".\Hanariu\Route::REGEX_SEGMENT;
 				$replace[] = "<$key>$value";
 			}
 
-			$expression = str_replace($search, $replace, $expression);
+			$expression = \str_replace($search, $replace, $expression);
 		}
 
 		return '#^'.$expression.'$#uD';
@@ -88,7 +88,7 @@ class Route {
 			$this->_regex = $regex;
 		}
 
-		$this->_route_regex = Route::compile($uri, $regex);
+		$this->_route_regex = \Hanariu\Route::compile($uri, $regex);
 	}
 
 	public function defaults(array $defaults = NULL)
@@ -105,9 +105,9 @@ class Route {
 
 	public function filter($callback)
 	{
-		if ( ! is_callable($callback))
+		if ( ! \is_callable($callback))
 		{
-			throw new Exception('Invalid Route::callback specified');
+			throw new \Hanariu\Exception('Invalid Route::callback specified');
 		}
 
 		$this->_filters[] = $callback;
@@ -115,17 +115,17 @@ class Route {
 		return $this;
 	}
 
-	public function matches(Request $request)
+	public function matches(\Hanariu\Request $request)
 	{
-		$uri = trim($request->uri(), '/');
+		$uri = \trim($request->uri(), '/');
 
-		if ( ! preg_match($this->_route_regex, $uri, $matches))
+		if ( ! \preg_match($this->_route_regex, $uri, $matches))
 			return FALSE;
 
 		$params = array();
 		foreach ($matches as $key => $value)
 		{
-			if (is_int($key))
+			if (\is_int($key))
 			{
 				continue;
 			}
@@ -143,25 +143,25 @@ class Route {
 
 		if ( ! empty($params['controller']))
 		{
-			$params['controller'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['controller'])));
+			$params['controller'] = \str_replace(' ', '_', \ucwords(\str_replace('_', ' ', $params['controller'])));
 		}
 
 		if ( ! empty($params['directory']))
 		{
-			$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
+			$params['directory'] = \str_replace(' ', '_', \ucwords(\str_replace('_', ' ', $params['directory'])));
 		}
 
 		if ($this->_filters)
 		{
 			foreach ($this->_filters as $callback)
 			{
-				$return = call_user_func($callback, $this, $params, $request);
+				$return = \call_user_func($callback, $this, $params, $request);
 
 				if ($return === FALSE)
 				{
 					return FALSE;
 				}
-				elseif (is_array($return))
+				elseif (\is_array($return))
 				{
 
 					$params = $return;
@@ -175,71 +175,72 @@ class Route {
 
 	public function is_external()
 	{
-		return ! in_array(Arr::get($this->_defaults, 'host', FALSE), Route::$localhosts);
+		return ! \in_array(\Hanariu\Arr::get($this->_defaults, 'host', FALSE), \Hanariu\Route::$localhosts);
 	}
+
 	public static function cache($save = FALSE, $append = FALSE)
 	{
 		if ($save === TRUE)
 		{
 			try
 			{
-				Core\Cache::save('Route::cache()', Route::$_routes);
+				\Hanariu::$cache->save('Route::cache()', \Hanariu\Route::$_routes);
 			}
 			catch (\Exception $e)
 			{
-				throw new Exception('One or more routes could not be cached (:message)', array(
+				throw new \Hanariu\Exception('One or more routes could not be cached (:message)', array(
 						':message' => $e->getMessage(),
 					), 0, $e);
 			}
 		}
 		else
 		{
-			if ($routes = Core\Cache::read('Route::cache()'))
+			if ($routes = \Hanariu::$cache->read('Route::cache()'))
 			{
 				if ($append)
 				{
 					// Append cached routes
-					Route::$_routes += $routes;
+					\Hanariu\Route::$_routes += $routes;
 				}
 				else
 				{
 					// Replace existing routes
-					Route::$_routes = $routes;
+					\Hanariu\Route::$_routes = $routes;
 				}
 
 				// Routes were cached
-				return Route::$cache = TRUE;
+				return \Hanariu\Route::$cache = TRUE;
 			}
 			else
 			{
 				// Routes were not cached
-				return Route::$cache = FALSE;
+				return \Hanariu\Route::$cache = FALSE;
 			}
 		}
 	}
 
 	public static function url($name, array $params = NULL, $protocol = NULL)
 	{
-		$route = Route::get($name);
+		$route = \Hanariu\Route::get($name);
 		if ($route->is_external())
-			return Route::get($name)->uri($params);
+			return \Hanariu\Route::get($name)->uri($params);
 		else
-			return URL::site(Route::get($name)->uri($params), $protocol);
+			return \Hanariu\URL::site(\Hanariu\Route::get($name)->uri($params), $protocol);
 	}
 
 	public function uri(array $params = NULL)
 	{
 		$uri = $this->_uri;
 
-		if (strpos($uri, '<') === FALSE AND strpos($uri, '(') === FALSE)
+		if (\strpos($uri, '<') === FALSE AND \strpos($uri, '(') === FALSE)
 		{
 
 			if ( ! $this->is_external())
 				return $uri;
 
-			if (strpos($this->_defaults['host'], '://') === FALSE)
+			if (\strpos($this->_defaults['host'], '://') === FALSE)
 			{
-				$params['host'] = Route::$default_protocol.$this->_defaults['host'];
+				$params['host'] = \Hanariu\Route::$default_protocol.$this->_defaults['host'];
 			}
 			else
 			{
@@ -247,35 +248,35 @@ class Route {
 				$params['host'] = $this->_defaults['host'];
 			}
 
-			return rtrim($params['host'], '/').'/'.$uri;
+			return \rtrim($params['host'], '/').'/'.$uri;
 		}
 
 		$provided_optional = FALSE;
 
-		while (preg_match('#\([^()]++\)#', $uri, $match))
+		while (\preg_match('#\([^()]++\)#', $uri, $match))
 		{
 
 			$search = $match[0];
-			$replace = substr($match[0], 1, -1);
+			$replace = \substr($match[0], 1, -1);
 
-			while (preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
+			while (\preg_match('#'.\Hanariu\Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
 
-				if (isset($params[$param]) AND $params[$param] !== Arr::get($this->_defaults, $param))
+				if (isset($params[$param]) AND $params[$param] !== \Hanariu\Arr::get($this->_defaults, $param))
 				{
 					$provided_optional = TRUE;
-					$replace = str_replace($key, $params[$param], $replace);
+					$replace = \str_replace($key, $params[$param], $replace);
 				}
 				elseif ($provided_optional)
 				{
 					if (isset($this->_defaults[$param]))
 					{
-						$replace = str_replace($key, $this->_defaults[$param], $replace);
+						$replace = \str_replace($key, $this->_defaults[$param], $replace);
 					}
 					else
 					{
-						throw new Exception('Required route parameter not passed: :param', array(
+						throw new \Hanariu\Exception('Required route parameter not passed: :param', array(
 							':param' => $param,
 						));
 					}
@@ -287,10 +288,10 @@ class Route {
 				}
 			}
 
-			$uri = str_replace($search, $replace, $uri);
+			$uri = \str_replace($search, $replace, $uri);
 		}
 
-		while (preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
+		while (\preg_match('#'.\Hanariu\Route::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
 
@@ -303,27 +304,27 @@ class Route {
 				else
 				{
 
-					throw new Exception('Required route parameter not passed: :param', array(
+					throw new \Hanariu\Exception('Required route parameter not passed: :param', array(
 						':param' => $param,
 					));
 				}
 			}
 
-			$uri = str_replace($key, $params[$param], $uri);
+			$uri = \str_replace($key, $params[$param], $uri);
 		}
 
-		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
+		$uri = \preg_replace('#//+#', '/', \rtrim($uri, '/'));
 
 		if ($this->is_external())
 		{
 			$host = $this->_defaults['host'];
 
-			if (strpos($host, '://') === FALSE)
+			if (\strpos($host, '://') === FALSE)
 			{
-				$host = Route::$default_protocol.$host;
+				$host = \Hanariu\Route::$default_protocol.$host;
 			}
 
-			$uri = rtrim($host, '/').'/'.$uri;
+			$uri = \rtrim($host, '/').'/'.$uri;
 		}
 
 		return $uri;

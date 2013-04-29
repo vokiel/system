@@ -23,7 +23,7 @@ class Curl extends External {
 
 		if ($cookies = $request->cookie())
 		{
-			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
+			$options[CURLOPT_COOKIE] = \http_build_query($cookies, NULL, '; ');
 		}
 
 		$response_header = $response->headers();
@@ -36,26 +36,26 @@ class Curl extends External {
 
 		if ($query = $request->query())
 		{
-			$uri .= '?'.http_build_query($query, NULL, '&');
+			$uri .= '?'.\http_build_query($query, NULL, '&');
 		}
 
-		$curl = curl_init($uri);
+		$curl = \curl_init($uri);
 
-		if ( ! curl_setopt_array($curl, $options))
+		if ( ! \curl_setopt_array($curl, $options))
 		{
 			throw new \Hanariu\Exception('Failed to set CURL options, check CURL documentation: :url',
 				array(':url' => 'http://php.net/curl_setopt_array'));
 		}
 
-		$body = curl_exec($curl);
-		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		$body = \curl_exec($curl);
+		$code = \curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 		if ($body === FALSE)
 		{
-			$error = curl_error($curl);
+			$error = \curl_error($curl);
 		}
 
-		curl_close($curl);
+		\curl_close($curl);
 
 		if (isset($error))
 		{

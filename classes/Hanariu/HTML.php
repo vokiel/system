@@ -42,12 +42,12 @@ abstract class HTML {
 
 	public static function chars($value, $double_encode = TRUE)
 	{
-		return htmlspecialchars( (string) $value, ENT_QUOTES, Hanariu::$charset, $double_encode);
+		return \htmlspecialchars( (string) $value, ENT_QUOTES, Hanariu::$charset, $double_encode);
 	}
 
 	public static function entities($value, $double_encode = TRUE)
 	{
-		return htmlentities( (string) $value, ENT_QUOTES, Hanariu::$charset, $double_encode);
+		return \htmlentities( (string) $value, ENT_QUOTES, Hanariu::$charset, $double_encode);
 	}
 
 	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = TRUE)
@@ -59,26 +59,26 @@ abstract class HTML {
 
 		if ($uri === '')
 		{
-			$uri = URL::base($protocol, $index);
+			$uri = \Hanariu\URL::base($protocol, $index);
 		}
 		else
 		{
 			if (strpos($uri, '://') !== FALSE)
 			{
-				if (HTML::$windowed_urls === TRUE AND empty($attributes['target']))
+				if (\Hanariu\HTML::$windowed_urls === TRUE AND empty($attributes['target']))
 				{
 					$attributes['target'] = '_blank';
 				}
 			}
 			elseif ($uri[0] !== '#')
 			{
-				$uri = URL::site($uri, $protocol, $index);
+				$uri = \Hanariu\URL::site($uri, $protocol, $index);
 			}
 		}
 
 		$attributes['href'] = $uri;
 
-		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
+		return '<a'.\Hanariu\HTML::attributes($attributes).'>'.$title.'</a>';
 	}
 
 
@@ -86,11 +86,11 @@ abstract class HTML {
 	{
 		if ($title === NULL)
 		{
-			$title = basename($file);
+			$title = \basename($file);
 		}
 
-		$attributes['href'] = URL::site($file, $protocol, $index);
-		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
+		$attributes['href'] = \Hanariu\URL::site($file, $protocol, $index);
+		return '<a'.\Hanariu\HTML::attributes($attributes).'>'.$title.'</a>';
 	}
 
 
@@ -101,47 +101,47 @@ abstract class HTML {
 			$title = $email;
 		}
 
-		return '<a href="&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email.'"'.HTML::attributes($attributes).'>'.$title.'</a>';
+		return '<a href="&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email.'"'.\Hanariu\HTML::attributes($attributes).'>'.$title.'</a>';
 	}
 
 
 	public static function style($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (\strpos($file, '://') === FALSE)
 		{
-			$file = URL::site($file, $protocol, $index);
+			$file = \Hanariu\URL::site($file, $protocol, $index);
 		}
 
 		$attributes['href'] = $file;
 		$attributes['rel'] = empty($attributes['rel']) ? 'stylesheet' : $attributes['rel'];
 		$attributes['type'] = 'text/css';
 
-		return '<link'.HTML::attributes($attributes).' />';
+		return '<link'.\Hanariu\HTML::attributes($attributes).' />';
 	}
 
 
 	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (\strpos($file, '://') === FALSE)
 		{
-			$file = URL::site($file, $protocol, $index);
+			$file = \Hanariu\URL::site($file, $protocol, $index);
 		}
 
 		$attributes['src'] = $file;
 		$attributes['type'] = 'text/javascript';
-		return '<script'.HTML::attributes($attributes).'></script>';
+		return '<script'.\Hanariu\HTML::attributes($attributes).'></script>';
 	}
 
 
 	public static function image($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (\strpos($file, '://') === FALSE)
 		{
-			$file = URL::site($file, $protocol, $index);
+			$file = \Hanariu\URL::site($file, $protocol, $index);
 		}
 
 		$attributes['src'] = $file;
-		return '<img'.HTML::attributes($attributes).' />';
+		return '<img'.\Hanariu\HTML::attributes($attributes).' />';
 	}
 
 
@@ -151,7 +151,7 @@ abstract class HTML {
 			return '';
 
 		$sorted = array();
-		foreach (HTML::$attribute_order as $key)
+		foreach (\Hanariu\HTML::$attribute_order as $key)
 		{
 			if (isset($attributes[$key]))
 			{
@@ -169,11 +169,11 @@ abstract class HTML {
 				continue;
 			}
 
-			if (is_int($key))
+			if (\is_int($key))
 			{
 				$key = $value;
 
-				if ( ! HTML::$strict)
+				if ( ! \Hanariu\HTML::$strict)
 				{
 					$value = FALSE;
 				}
@@ -181,9 +181,9 @@ abstract class HTML {
 
 			$compiled .= ' '.$key;
 
-			if ($value OR HTML::$strict)
+			if ($value OR \Hanariu\HTML::$strict)
 			{
-				$compiled .= '="'.HTML::chars($value).'"';
+				$compiled .= '="'.\Hanariu\HTML::chars($value).'"';
 			}
 		}
 

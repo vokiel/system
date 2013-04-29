@@ -14,44 +14,44 @@ class Send extends \Hanariu\Response {
 		{
 			if (empty($download))
 			{
-				throw new \Exception('Download name must be provided for streaming files');
+				throw new \Hanariu\Exception('Download name must be provided for streaming files');
 			}
 
 			$options['delete'] = FALSE;
 
 			if ( ! isset($mime))
 			{
-				$mime = \Hanariu\File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
+				$mime = \Hanariu\File::mime_by_ext(\strtolower(\pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
 			$file_data = (string) $this->_body;
-			$size = strlen($file_data);
-			$file = tmpfile();
-			fwrite($file, $file_data);
+			$size = \strlen($file_data);
+			$file = \tmpfile();
+			\fwrite($file, $file_data);
 			unset($file_data);
 		}
 		else
 		{
-			$filename = realpath($filename);
+			$filename = \realpath($filename);
 
 			if (empty($download))
 			{
-				$download = pathinfo($filename, PATHINFO_BASENAME);
+				$download = \pathinfo($filename, PATHINFO_BASENAME);
 			}
 
-			$size = filesize($filename);
+			$size = \filesize($filename);
 
 			if ( ! isset($mime))
 			{
-				$mime = \Hanariu\File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
+				$mime = \Hanariu\File::mime_by_ext(\pathinfo($download, PATHINFO_EXTENSION));
 			}
 
-			$file = fopen($filename, 'rb');
+			$file = \fopen($filename, 'rb');
 		}
 
-		if ( ! is_resource($file))
+		if ( ! \is_resource($file))
 		{
-			throw new \Exception('Could not read file to send: :file', array(
+			throw new \Hanariu\Exception('Could not read file to send: :file', array(
 				':file' => $download,
 			));
 		}
@@ -81,7 +81,7 @@ class Send extends \Hanariu\Response {
 				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
 			}
 
-			if (version_compare(\Hanariu\Request::user_agent('version'), '8.0', '>='))
+			if (\version_compare(\Hanariu\Request::user_agent('version'), '8.0', '>='))
 			{
 				$this->_header['x-content-type-options'] = 'nosniff';
 			}
@@ -89,25 +89,25 @@ class Send extends \Hanariu\Response {
 
 		$this->send_headers();
 
-		while (ob_get_level())
+		while (\ob_get_level())
 		{
-			ob_end_flush();
+			\ob_end_flush();
 		}
 
-		ignore_user_abort(TRUE);
+		\ignore_user_abort(TRUE);
 
 		if ( ! \Hanariu\Hanariu::$safe_mode)
 		{
-			set_time_limit(0);
+			\set_time_limit(0);
 		}
 
 		$block = 1024 * 16;
 
-		fseek($file, $start);
+		\fseek($file, $start);
 
-		while ( ! feof($file) AND ($pos = ftell($file)) <= $end)
+		while ( ! \feof($file) AND ($pos = \ftell($file)) <= $end)
 		{
-			if (connection_aborted())
+			if (\connection_aborted())
 				break;
 
 			if ($pos + $block > $end)
@@ -115,23 +115,23 @@ class Send extends \Hanariu\Response {
 				$block = $end - $pos + 1;
 			}
 
-			echo fread($file, $block);
-			flush();
+			echo \fread($file, $block);
+			\flush();
 		}
 
-		fclose($file);
+		\fclose($file);
 
 		if ( ! empty($options['delete']))
 		{
 			try
 			{
-				unlink($filename);
+				\unlink($filename);
 			}
 			catch (\Exception $e)
 			{
 				$error = \Hanariu\Exception::text($e);
 
-				if (is_object(Hanariu::$log))
+				if (\is_object(\Hanariu\Hanariu::$log))
 				{
 					\Hanariu\Hanariu::$log->add(\Hanariu\Log::ERROR, $error);
 					\Hanariu\Hanariu::$log->write();

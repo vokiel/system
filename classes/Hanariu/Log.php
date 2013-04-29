@@ -16,23 +16,23 @@ class Log {
 
 	public static function instance()
 	{
-		if (Log::$_instance === NULL)
+		if (\Hanariu\Log::$_instance === NULL)
 		{
-			Log::$_instance = new Log;
-			register_shutdown_function(array(Log::$_instance, 'write'));
+			\Hanariu\Log::$_instance = new \Hanariu\Log;
+			\register_shutdown_function(array(\Hanariu\Log::$_instance, 'write'));
 		}
 
-		return Log::$_instance;
+		return \Hanariu\Log::$_instance;
 	}
 
 	protected $_messages = array();
 	protected $_writers = array();
 
-	public function attach(Log\Writer $writer, $levels = array(), $min_level = 0)
+	public function attach(\Hanariu\Log\Writer $writer, $levels = array(), $min_level = 0)
 	{
-		if ( ! is_array($levels))
+		if ( ! \is_array($levels))
 		{
-			$levels = range($min_level, $levels);
+			$levels = \range($min_level, $levels);
 		}
 		
 		$this->_writers["{$writer}"] = array
@@ -44,7 +44,7 @@ class Log {
 		return $this;
 	}
 
-	public function detach(Log\Writer $writer)
+	public function detach(\Hanariu\Log\Writer $writer)
 	{
 		// Remove the writer
 		unset($this->_writers["{$writer}"]);
@@ -56,7 +56,7 @@ class Log {
 	{
 		if ($values)
 		{
-			$message = strtr($message, $values);
+			$message = \strtr($message, $values);
 		}
 
 		if (isset($additional['exception']))
@@ -65,16 +65,16 @@ class Log {
 		}
 		else
 		{
-			if ( ! defined('DEBUG_BACKTRACE_IGNORE_ARGS'))
+			if ( ! \defined('DEBUG_BACKTRACE_IGNORE_ARGS'))
 			{
-				$trace = array_map(function ($item) {
+				$trace = \array_map(function ($item) {
 					unset($item['args']);
 					return $item;
-				}, array_slice(debug_backtrace(FALSE), 1));
+				}, \array_slice(\debug_backtrace(FALSE), 1));
 			}
 			else
 			{
-				$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+				$trace = \array_slice(\debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
 			}
 		}
 
@@ -85,7 +85,7 @@ class Log {
 
 		$this->_messages[] = array
 		(
-			'time'       => time(),
+			'time'       => \time(),
 			'level'      => $level,
 			'body'       => $message,
 			'trace'      => $trace,
@@ -96,7 +96,7 @@ class Log {
 			'additional' => $additional,
 		);
 
-		if (Log::$write_on_add)
+		if (\Hanariu\Log::$write_on_add)
 		{
 			$this->write();
 		}

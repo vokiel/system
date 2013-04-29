@@ -17,18 +17,18 @@ class Cookie {
 		}
 
 		$cookie = $_COOKIE[$key];
-		$split = strlen(Cookie::salt($key, NULL));
+		$split = strlen(\Hanariu\Cookie::salt($key, NULL));
 
 		if (isset($cookie[$split]) AND $cookie[$split] === '~')
 		{
-			list ($hash, $value) = explode('~', $cookie, 2);
+			list ($hash, $value) = \explode('~', $cookie, 2);
 
-			if (Cookie::salt($key, $value) === $hash)
+			if (\Hanariu\Cookie::salt($key, $value) === $hash)
 			{
 				return $value;
 			}
 
-			Cookie::delete($key);
+			\Hanariu\Cookie::delete($key);
 		}
 
 		return $default;
@@ -38,36 +38,36 @@ class Cookie {
 	{
 		if ($expiration === NULL)
 		{
-			$expiration = Cookie::$expiration;
+			$expiration = \Hanariu\Cookie::$expiration;
 		}
 
 		if ($expiration !== 0)
 		{
-			$expiration += time();
+			$expiration += t\ime();
 		}
 
-		$value = Cookie::salt($name, $value).'~'.$value;
+		$value = \Hanariu\Cookie::salt($name, $value).'~'.$value;
 
-		return setcookie($name, $value, $expiration, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+		return \setcookie($name, $value, $expiration, \Hanariu\Cookie::$path, \Hanariu\Cookie::$domain, \Hanariu\Cookie::$secure, \Hanariu\Cookie::$httponly);
 	}
 
 
 	public static function delete($name)
 	{
 		unset($_COOKIE[$name]);
-		return setcookie($name, NULL, -86400, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+		return \setcookie($name, NULL, -86400, \Hanariu\Cookie::$path, \Hanariu\Cookie::$domain, \Hanariu\Cookie::$secure, \Hanariu\Cookie::$httponly);
 	}
 
 	public static function salt($name, $value)
 	{
 		if ( ! Cookie::$salt)
 		{
-			throw new Exception('A valid cookie salt is required. Please set Cookie::$salt.');
+			throw new \Hanariu\Exception('A valid cookie salt is required. Please set Cookie::$salt.');
 		}
 
-		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
+		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? \strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return sha1($agent.$name.$value.Cookie::$salt);
+		return \sha1($agent.$name.$value.\Hanariu\Cookie::$salt);
 	}
 
 }

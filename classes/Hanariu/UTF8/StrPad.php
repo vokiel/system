@@ -5,7 +5,7 @@ class StrPad{
 	public static function _str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_RIGHT)
 	{
 		if (\Hanariu\UTF8::is_ascii($str) AND \Hanariu\UTF8::is_ascii($pad_str))
-			return str_pad($str, $final_str_length, $pad_str, $pad_type);
+			return \str_pad($str, $final_str_length, $pad_str, $pad_type);
 
 		$str_length = \Hanariu\UTF8::strlen($str);
 
@@ -17,26 +17,26 @@ class StrPad{
 
 		if ($pad_type == STR_PAD_RIGHT)
 		{
-			$repeat = ceil($pad_length / $pad_str_length);
-			return \Hanariu\UTF8::substr($str.str_repeat($pad_str, $repeat), 0, $final_str_length);
+			$repeat = \ceil($pad_length / $pad_str_length);
+			return \Hanariu\UTF8::substr($str.\str_repeat($pad_str, $repeat), 0, $final_str_length);
 		}
 
 		if ($pad_type == STR_PAD_LEFT)
 		{
-			$repeat = ceil($pad_length / $pad_str_length);
-			return \Hanariu\UTF8::substr(str_repeat($pad_str, $repeat), 0, floor($pad_length)).$str;
+			$repeat = \ceil($pad_length / $pad_str_length);
+			return \Hanariu\UTF8::substr(\str_repeat($pad_str, $repeat), 0, \floor($pad_length)).$str;
 		}
 
 		if ($pad_type == STR_PAD_BOTH)
 		{
 			$pad_length /= 2;
-			$pad_length_left = floor($pad_length);
-			$pad_length_right = ceil($pad_length);
-			$repeat_left = ceil($pad_length_left / $pad_str_length);
-			$repeat_right = ceil($pad_length_right / $pad_str_length);
+			$pad_length_left = \floor($pad_length);
+			$pad_length_right = \ceil($pad_length);
+			$repeat_left = \ceil($pad_length_left / $pad_str_length);
+			$repeat_right = \ceil($pad_length_right / $pad_str_length);
 
-			$pad_left = \Hanariu\UTF8::substr(str_repeat($pad_str, $repeat_left), 0, $pad_length_left);
-			$pad_right = \Hanariu\UTF8::substr(str_repeat($pad_str, $repeat_right), 0, $pad_length_right);
+			$pad_left = \Hanariu\UTF8::substr(\str_repeat($pad_str, $repeat_left), 0, $pad_length_left);
+			$pad_right = \Hanariu\UTF8::substr(\str_repeat($pad_str, $repeat_right), 0, $pad_length_right);
 			return $pad_left.$str.$pad_right;
 		}
 

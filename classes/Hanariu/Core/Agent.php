@@ -22,11 +22,11 @@ class Agent {
 
 			foreach ($browsers as $search => $name)
 			{
-				if (stripos($agent, $search) !== FALSE)
+				if (\stripos($agent, $search) !== FALSE)
 				{
 					$info['browser'] = $name;
 
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					if (\preg_match('#'.\preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', \Hanariu\Request::$user_agent, $matches))
 					{
 						$info['version'] = $matches[1];
 					}
@@ -45,7 +45,7 @@ class Agent {
 
 			foreach ($group as $search => $name)
 			{
-				if (stripos($agent, $search) !== FALSE)
+				if (\stripos($agent, $search) !== FALSE)
 				{
 
 					return $name;

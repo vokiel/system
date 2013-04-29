@@ -8,9 +8,9 @@ class E405 extends Expected {
 
 	public function allowed($methods)
 	{
-		if (is_array($methods))
+		if (\is_array($methods))
 		{
-			$methods = implode(',', $methods);
+			$methods = \implode(',', $methods);
 		}
 
 		$this->headers('allow', $methods);

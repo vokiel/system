@@ -8,7 +8,7 @@ class Strspn{
 			return 0;
 
 		if (\Hanariu\UTF8::is_ascii($str) AND \Hanariu\UTF8::is_ascii($mask))
-			return ($offset === NULL) ? strspn($str, $mask) : (($length === NULL) ? strspn($str, $mask, $offset) : strspn($str, $mask, $offset, $length));
+			return ($offset === NULL) ? \strspn($str, $mask) : (($length === NULL) ? \strspn($str, $mask, $offset) : \strspn($str, $mask, $offset, $length));
 
 		if ($offset !== NULL OR $length !== NULL)
 		{
@@ -17,8 +17,8 @@ class Strspn{
 
 		// Escape these characters:  - [ ] . : \ ^ /
 		// The . and : are escaped to prevent possible warnings about POSIX regex elements
-		$mask = preg_replace('#[-[\].:\\\\^/]#', '\\\\$0', $mask);
-		preg_match('/^[^'.$mask.']+/u', $str, $matches);
+		$mask = \preg_replace('#[-[\].:\\\\^/]#', '\\\\$0', $mask);
+		\preg_match('/^[^'.$mask.']+/u', $str, $matches);
 
 		return isset($matches[0]) ? \Hanariu\UTF8::strlen($matches[0]) : 0;
 	}

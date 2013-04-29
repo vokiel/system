@@ -43,18 +43,18 @@ class Autoload
 	public function auto_load($class)
 	{
 		// Transform the class name according to PSR-0
-		$class     = ltrim($class, '\\');
+		$class     = \ltrim($class, '\\');
 		$file      = '';
 		$namespace = '';
 
 		if ($last_namespace_position = strripos($class, '\\'))
 		{
-			$namespace = substr($class, 0, $last_namespace_position);
-			$class     = substr($class, $last_namespace_position + 1);
-			$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
+			$namespace = \substr($class, 0, $last_namespace_position);
+			$class     = \substr($class, $last_namespace_position + 1);
+			$file      = \str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
 		}
 
-		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
+		$file .= \str_replace('_', DIRECTORY_SEPARATOR, $class);
 
 		if ($path = $this->_filesystem->find_file($this->_root, $file))
 		{

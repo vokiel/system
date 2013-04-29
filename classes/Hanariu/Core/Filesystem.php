@@ -3,10 +3,12 @@
 class Filesystem
 {
 	protected $_include_paths = array();
+	public $cache = FALSE;
 
 	public function __construct(array $paths)
 	{
 		$this->_paths = $paths;
+		return $this;
 	}
 
 	public function include_paths()
@@ -20,7 +22,7 @@ class Filesystem
 
 		foreach ($paths === NULL ? $this->_paths : $paths as $path)
 		{
-			if (is_dir($path.$directory))
+			if (\is_dir($path.$directory))
 			{
 				$dir = new \DirectoryIterator($path.$directory);
 
@@ -29,7 +31,7 @@ class Filesystem
 					$filename = $file->getFilename();
 
 					// Skip all hidden files and UNIX backup files
-					if ($filename[0] === '.' OR $filename[strlen($filename)-1] === '~')
+					if ($filename[0] === '.' OR $filename[\strlen($filename)-1] === '~')
 						continue;
 
 					// Relative filename is the array key
@@ -67,17 +69,45 @@ class Filesystem
 
 	public function find_file($dir, $file, $ext = 'php')
 	{
+		$array = FALSE;
+		if (\Hanariu\Hanariu::$caching === TRUE AND isset(\Hanariu\Hanariu::$_files[$dir.($array ? '_array' : '_path')]))
+		{
+			// This path has been cached
+			return \Hanariu\Hanariu::$_files[$dir.($array ? '_array' : '_path')];
+		}
+
+		if (\Hanariu\Hanariu::$profiling === TRUE AND \class_exists('\Hanariu\Profiler', FALSE))
+		{
+			// Start a new benchmark
+			$benchmark = \Hanariu\Profiler::start('Hanariu', __FUNCTION__);
+		}
+
 		$found = FALSE;
 
 		$path = $this->_build_file_path($dir, $file, $ext);
 
 		foreach ($this->_paths as $dir)
 		{
-			if (is_file($dir.$path))
+			if (\is_file($dir.$path))
 			{
 				$found = $dir.$path;
 				break;
 			}
+		}
+
+		if (\Hanariu\Hanariu::$caching === TRUE)
+		{
+			// Add the path to the cache
+			\Hanariu\Hanariu::$_files[$path.($array ? '_array' : '_path')] = $found;
+
+			// Files have been changed
+			\Hanariu\Hanariu::$_files_changed = TRUE;
+		}
+
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			\Hanariu\Profiler::stop($benchmark);
 		}
 
 		return $found;
@@ -91,7 +121,7 @@ class Filesystem
 
 		foreach ($this->_paths as $dir)
 		{
-			if (is_file($dir.$path))
+			if (\is_file($dir.$path))
 				$found[] = $dir.$path;
 		}
 

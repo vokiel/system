@@ -6,36 +6,36 @@ class Arr {
 
 	public static function is_assoc(array $array)
 	{
-		$keys = array_keys($array);
-		return array_keys($keys) !== $keys;
+		$keys = \array_keys($array);
+		return \array_keys($keys) !== $keys;
 	}
 
 	public static function is_array($value)
 	{
-		if (is_array($value))
+		if (\is_array($value))
 		{
 			return TRUE;
 		}
 		else
 		{
-			return (is_object($value) AND $value instanceof \Traversable);
+			return (\is_object($value) AND $value instanceof \Traversable);
 		}
 	}
 
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
-		if ( ! Arr::is_array($array))
+		if ( ! \Hanariu\Arr::is_array($array))
 		{
 			return $default;
 		}
 
-		if (is_array($path))
+		if (\is_array($path))
 		{
 			$keys = $path;
 		}
 		else
 		{
-			if (array_key_exists($path, $array))
+			if (\array_key_exists($path, $array))
 			{
 				return $array[$path];
 			}
@@ -46,16 +46,16 @@ class Arr {
 				$delimiter = Arr::$delimiter;
 			}
 
-			$path = ltrim($path, "{$delimiter} ");
-			$path = rtrim($path, "{$delimiter} *");
-			$keys = explode($delimiter, $path);
+			$path = \ltrim($path, "{$delimiter} ");
+			$path = \rtrim($path, "{$delimiter} *");
+			$keys = \explode($delimiter, $path);
 		}
 
 		do
 		{
-			$key = array_shift($keys);
+			$key = \array_shift($keys);
 
-			if (ctype_digit($key))
+			if (\ctype_digit($key))
 			{
 				$key = (int) $key;
 			}
@@ -64,7 +64,7 @@ class Arr {
 			{
 				if ($keys)
 				{
-					if (Arr::is_array($array[$key]))
+					if (\Hanariu\Arr::is_array($array[$key]))
 					{
 						$array = $array[$key];
 					}
@@ -84,7 +84,7 @@ class Arr {
 				$values = array();
 				foreach ($array as $arr)
 				{
-					if ($value = Arr::path($arr, implode('.', $keys)))
+					if ($value = \Hanariu\Arr::path($arr, \implode('.', $keys)))
 					{
 						$values[] = $value;
 					}
@@ -112,16 +112,16 @@ class Arr {
 	{
 		if ( ! $delimiter)
 		{
-			$delimiter = Arr::$delimiter;
+			$delimiter = \Hanariu\Arr::$delimiter;
 		}
 
-		$keys = explode($delimiter, $path);
+		$keys = \explode($delimiter, $path);
 
-		while (count($keys) > 1)
+		while (\count($keys) > 1)
 		{
-			$key = array_shift($keys);
+			$key = \array_shift($keys);
 
-			if (ctype_digit($key))
+			if (\ctype_digit($key))
 			{
 				$key = (int) $key;
 			}
@@ -134,7 +134,7 @@ class Arr {
 			$array = & $array[$key];
 		}
 
-		$array[array_shift($keys)] = $value;
+		$array[\array_shift($keys)] = $value;
 	}
 
 	public static function range($step = 10, $max = 100)
@@ -161,7 +161,7 @@ class Arr {
 		$found = array();
 		foreach ($paths as $path)
 		{
-			Arr::set_path($found, $path, Arr::path($array, $path, $default));
+			\Hanariu\Arr::set_path($found, $path, \Hanariu\Arr::path($array, $path, $default));
 		}
 
 		return $found;
@@ -184,9 +184,9 @@ class Arr {
 
 	public static function unshift( array & $array, $key, $val)
 	{
-		$array = array_reverse($array, TRUE);
+		$array = \array_reverse($array, TRUE);
 		$array[$key] = $val;
-		$array = array_reverse($array, TRUE);
+		$array = \array_reverse($array, TRUE);
 
 		return $array;
 	}
@@ -195,22 +195,22 @@ class Arr {
 	{
 		foreach ($array as $key => $val)
 		{
-			if (is_array($val))
+			if (\is_array($val))
 			{
-				$array[$key] = Arr::map($callbacks, $array[$key]);
+				$array[$key] = \Hanariu\Arr::map($callbacks, $array[$key]);
 			}
-			elseif ( ! is_array($keys) OR in_array($key, $keys))
+			elseif ( ! \is_array($keys) OR \in_array($key, $keys))
 			{
-				if (is_array($callbacks))
+				if (\is_array($callbacks))
 				{
 					foreach ($callbacks as $cb)
 					{
-						$array[$key] = call_user_func($cb, $array[$key]);
+						$array[$key] = \call_user_func($cb, $array[$key]);
 					}
 				}
 				else
 				{
-					$array[$key] = call_user_func($callbacks, $array[$key]);
+					$array[$key] = \call_user_func($callbacks, $array[$key]);
 				}
 			}
 		}
@@ -220,13 +220,13 @@ class Arr {
 
 	public static function merge($array1, $array2)
 	{
-		if (Arr::is_assoc($array2))
+		if (\Hanariu\Arr::is_assoc($array2))
 		{
 			foreach ($array2 as $key => $value)
 			{
-				if (is_array($value)
+				if (\is_array($value)
 					AND isset($array1[$key])
-					AND is_array($array1[$key])
+					AND \is_array($array1[$key])
 				)
 				{
 					$array1[$key] = Arr::merge($array1[$key], $value);
@@ -241,27 +241,27 @@ class Arr {
 		{
 			foreach ($array2 as $value)
 			{
-				if ( ! in_array($value, $array1, TRUE))
+				if ( ! \in_array($value, $array1, TRUE))
 				{
 					$array1[] = $value;
 				}
 			}
 		}
 
-		if (func_num_args() > 2)
+		if (\func_num_args() > 2)
 		{
-			foreach (array_slice(func_get_args(), 2) as $array2)
+			foreach (\array_slice(\func_get_args(), 2) as $array2)
 			{
-				if (Arr::is_assoc($array2))
+				if (\Hanariu\Arr::is_assoc($array2))
 				{
 					foreach ($array2 as $key => $value)
 					{
-						if (is_array($value)
+						if (\is_array($value)
 							AND isset($array1[$key])
-							AND is_array($array1[$key])
+							AND \is_array($array1[$key])
 						)
 						{
-							$array1[$key] = Arr::merge($array1[$key], $value);
+							$array1[$key] = \Hanariu\Arr::merge($array1[$key], $value);
 						}
 						else
 						{
@@ -273,7 +273,7 @@ class Arr {
 				{
 					foreach ($array2 as $value)
 					{
-						if ( ! in_array($value, $array1, TRUE))
+						if ( ! \in_array($value, $array1, TRUE))
 						{
 							$array1[] = $value;
 						}
@@ -287,16 +287,16 @@ class Arr {
 
 	public static function overwrite($array1, $array2)
 	{
-		foreach (array_intersect_key($array2, $array1) as $key => $value)
+		foreach (\array_intersect_key($array2, $array1) as $key => $value)
 		{
 			$array1[$key] = $value;
 		}
 
-		if (func_num_args() > 2)
+		if (\func_num_args() > 2)
 		{
-			foreach (array_slice(func_get_args(), 2) as $array2)
+			foreach (\array_slice(\func_get_args(), 2) as $array2)
 			{
-				foreach (array_intersect_key($array2, $array1) as $key => $value)
+				foreach (\array_intersect_key($array2, $array1) as $key => $value)
 				{
 					$array1[$key] = $value;
 				}
@@ -310,14 +310,14 @@ class Arr {
 	{
 		$command = $params = NULL;
 
-		if (preg_match('/^([^\(]*+)\((.*)\)$/', $str, $match))
+		if (\preg_match('/^([^\(]*+)\((.*)\)$/', $str, $match))
 		{
 			$command = $match[1];
 
 			if ($match[2] !== '')
 			{
-				$params = preg_split('/(?<!\\\\),/', $match[2]);
-				$params = str_replace('\,', ',', $params);
+				$params = \preg_split('/(?<!\\\\),/', $match[2]);
+				$params = \str_replace('\,', ',', $params);
 			}
 		}
 		else
@@ -326,9 +326,9 @@ class Arr {
 			$command = $str;
 		}
 
-		if (strpos($command, '::') !== FALSE)
+		if (\strpos($command, '::') !== FALSE)
 		{
-			$command = explode('::', $command, 2);
+			$command = \explode('::', $command, 2);
 		}
 
 		return array($command, $params);
@@ -336,14 +336,14 @@ class Arr {
 
 	public static function flatten($array)
 	{
-		$is_assoc = Arr::is_assoc($array);
+		$is_assoc = \Hanariu\Arr::is_assoc($array);
 
 		$flat = array();
 		foreach ($array as $key => $value)
 		{
-			if (is_array($value))
+			if (\is_array($value))
 			{
-				$flat = array_merge($flat, Arr::flatten($value));
+				$flat = \array_merge($flat, Arr::flatten($value));
 			}
 			else
 			{

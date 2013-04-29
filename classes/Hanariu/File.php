@@ -4,33 +4,33 @@ class File {
 
 	public static function mime($filename)
 	{
-		$filename = realpath($filename);
-		$extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+		$filename = \realpath($filename);
+		$extension = \strtolower(\pathinfo($filename, PATHINFO_EXTENSION));
 
-		if (preg_match('/^(?:jpe?g|png|[gt]if|bmp|swf)$/', $extension))
+		if (\preg_match('/^(?:jpe?g|png|[gt]if|bmp|swf)$/', $extension))
 		{
-			$file = getimagesize($filename);
+			$file = \getimagesize($filename);
 
 			if (isset($file['mime']))
 				return $file['mime'];
 		}
 
-		if (class_exists('finfo', FALSE))
+		if (\class_exists('finfo', FALSE))
 		{
-			if ($info = new finfo(defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME))
+			if ($info = new \finfo(\defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME))
 			{
 				return $info->file($filename);
 			}
 		}
 
-		if (ini_get('mime_magic.magicfile') AND function_exists('mime_content_type'))
+		if (\ini_get('mime_magic.magicfile') AND \function_exists('mime_content_type'))
 		{
-			return mime_content_type($filename);
+			return \mime_content_type($filename);
 		}
 
 		if ( ! empty($extension))
 		{
-			return File::mime_by_ext($extension);
+			return \Hanariu\File::mime_by_ext($extension);
 		}
 
 		return FALSE;
@@ -72,7 +72,7 @@ class File {
 					{
 						$types[$mime] = array( (string) $ext);
 					}
-					elseif ( ! in_array($ext, $types[$mime]))
+					elseif ( ! \in_array($ext, $types[$mime]))
 					{
 						$types[$mime][] = (string) $ext;
 					}
@@ -85,53 +85,53 @@ class File {
 
 	public static function ext_by_mime($type)
 	{
-		return current(File::exts_by_mime($type));
+		return \current(\Hanariu\File::exts_by_mime($type));
 	}
 
 	public static function split($filename, $piece_size = 10)
 	{
-		$file = fopen($filename, 'rb');
-		$piece_size = floor($piece_size * 1024 * 1024);
+		$file = \fopen($filename, 'rb');
+		$piece_size = \floor($piece_size * 1024 * 1024);
 		$block_size = 1024 * 8;
 		$peices = 0;
 
-		while ( ! feof($file))
+		while ( ! \feof($file))
 		{
 			$peices += 1;
-			$piece = str_pad($peices, 3, '0', STR_PAD_LEFT);
-			$piece = fopen($filename.'.'.$piece, 'wb+');
+			$piece = \str_pad($peices, 3, '0', STR_PAD_LEFT);
+			$piece = \fopen($filename.'.'.$piece, 'wb+');
 			$read = 0;
 
 			do
 			{
-				fwrite($piece, fread($file, $block_size));
+				\fwrite($piece, \fread($file, $block_size));
 				$read += $block_size;
 			}
 			while ($read < $piece_size);
-			fclose($piece);
+			\fclose($piece);
 		}
 
-		fclose($file);
+		\fclose($file);
 		return $peices;
 	}
 
 	public static function join($filename)
 	{
-		$file = fopen($filename, 'wb+');
+		$file = \fopen($filename, 'wb+');
 		$block_size = 1024 * 8;
 		$pieces = 0;
 
-		while (is_file($piece = $filename.'.'.str_pad($pieces + 1, 3, '0', STR_PAD_LEFT)))
+		while (\is_file($piece = $filename.'.'.\str_pad($pieces + 1, 3, '0', STR_PAD_LEFT)))
 		{
 			$pieces += 1;
-			$piece = fopen($piece, 'rb');
+			$piece = \fopen($piece, 'rb');
 
-			while ( ! feof($piece))
+			while ( ! \feof($piece))
 			{
-				fwrite($file, fread($piece, $block_size));
+				\fwrite($file, \fread($piece, $block_size));
 			}
 
-			fclose($piece);
+			\fclose($piece);
 		}
 
 		return $pieces;

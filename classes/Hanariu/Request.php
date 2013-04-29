@@ -1,6 +1,6 @@
 <?php namespace Hanariu;
 
-class Request implements HTTP\Request {
+class Request implements \Hanariu\HTTP\Request {
 
 	public static $user_agent = '';
 	public static $client_ip = '0.0.0.0';
@@ -10,7 +10,7 @@ class Request implements HTTP\Request {
 
 	public static function factory($uri = TRUE, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
-		if ( ! Request::$initial)
+		if ( ! \Hanariu\Request::$initial)
 		{
 			if (isset($_SERVER['SERVER_PROTOCOL']))
 			{
@@ -18,7 +18,7 @@ class Request implements HTTP\Request {
 			}
 			else
 			{
-				$protocol = HTTP::$protocol;
+				$protocol = \Hanariu\HTTP::$protocol;
 			}
 
 			if (isset($_SERVER['REQUEST_METHOD']))
@@ -27,10 +27,10 @@ class Request implements HTTP\Request {
 			}
 			else
 			{
-				$method = HTTP\Request::GET;
+				$method = \Hanariu\HTTP\Request::GET;
 			}
 
-			if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			if ( ! empty($_SERVER['HTTPS']) AND \filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
 			{
 				$secure = TRUE;
 			}
@@ -42,7 +42,7 @@ class Request implements HTTP\Request {
 
 			if (isset($_SERVER['HTTP_USER_AGENT']))
 			{
-				Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
+				\Hanariu\Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 			}
 
 			if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
@@ -52,50 +52,50 @@ class Request implements HTTP\Request {
 
 			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
 			    AND isset($_SERVER['REMOTE_ADDR'])
-			    AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
+			    AND \in_array($_SERVER['REMOTE_ADDR'], \Hanariu\Request::$trusted_proxies))
 			{
 
-				$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-				Request::$client_ip = array_shift($client_ips);
+				$client_ips = \explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+				\Hanariu\Request::$client_ip = \array_shift($client_ips);
 
 				unset($client_ips);
 			}
 			elseif (isset($_SERVER['HTTP_CLIENT_IP'])
 			        AND isset($_SERVER['REMOTE_ADDR'])
-			        AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
+			        AND \in_array($_SERVER['REMOTE_ADDR'], \Hanariu\Request::$trusted_proxies))
 			{
 				$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
 
-				Request::$client_ip = array_shift($client_ips);
+				\Hanariu\Request::$client_ip = \array_shift($client_ips);
 
 				unset($client_ips);
 			}
 			elseif (isset($_SERVER['REMOTE_ADDR']))
 			{
-				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
+				\Hanariu\Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if ($method !== HTTP\Request::GET)
+			if ($method !== \Hanariu\HTTP\Request::GET)
 			{
-				$body = file_get_contents('php://input');
+				$body = \file_get_contents('php://input');
 			}
 
 			if ($uri === TRUE)
 			{
-				$uri = Request::detect_uri();
+				$uri = \Hanariu\Request::detect_uri();
 			}
 
 			$cookies = array();
 
-			if (($cookie_keys = array_keys($_COOKIE)))
+			if (($cookie_keys = \array_keys($_COOKIE)))
 			{
 				foreach ($cookie_keys as $key)
 				{
-					$cookies[$key] = Cookie::get($key);
+					$cookies[$key] = \Hanariu\Cookie::get($key);
 				}
 			}
 
-			Request::$initial = $request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			\Hanariu\Request::$initial = $request = new \Hanariu\Request($uri, $client_params, $allow_external, $injected_routes);
 
 			$request->protocol($protocol)
 				->query($_GET)
@@ -133,7 +133,7 @@ class Request implements HTTP\Request {
 		}
 		else
 		{
-			$request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			$request = new \Hanariu\Request($uri, $client_params, $allow_external, $injected_routes);
 		}
 
 		return $request;
@@ -153,12 +153,12 @@ class Request implements HTTP\Request {
 
 				$uri = $_SERVER['REQUEST_URI'];
 
-				if ($request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
+				if ($request_uri = \parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
 				{
 					$uri = $request_uri;
 				}
 
-				$uri = rawurldecode($uri);
+				$uri = \rawurldecode($uri);
 			}
 			elseif (isset($_SERVER['PHP_SELF']))
 			{
@@ -170,19 +170,19 @@ class Request implements HTTP\Request {
 			}
 			else
 			{
-				throw new \Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
+				throw new \Hanariu\Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
 			}
 
-			$base_url = parse_url(Hanariu::$base_url, PHP_URL_PATH);
+			$base_url = \parse_url(Hanariu::$base_url, PHP_URL_PATH);
 
-			if (strpos($uri, $base_url) === 0)
+			if (\strpos($uri, $base_url) === 0)
 			{
-				$uri = (string) substr($uri, strlen($base_url));
+				$uri = (string) \substr($uri, \strlen($base_url));
 			}
 
-			if (Hanariu::$index_file AND strpos($uri, Hanariu::$index_file) === 0)
+			if (Hanariu::$index_file AND \strpos($uri, Hanariu::$index_file) === 0)
 			{
-				$uri = (string) substr($uri, strlen(Hanariu::$index_file));
+				$uri = (string) \substr($uri, \strlen(Hanariu::$index_file));
 			}
 		}
 
@@ -191,17 +191,17 @@ class Request implements HTTP\Request {
 
 	public static function current()
 	{
-		return Request::$current;
+		return \Hanariu\Request::$current;
 	}
 
 	public static function initial()
 	{
-		return Request::$initial;
+		return \Hanariu\Request::$initial;
 	}
 
 	public static function user_agent($value)
 	{
-		return Core\Agent::user_agent(Request::$user_agent, $value);
+		return \Hanariu\Core\Agent::user_agent(\Hanariu\Request::$user_agent, $value);
 	}
 
 	public static function accept_type($type = NULL)
@@ -210,7 +210,7 @@ class Request implements HTTP\Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
+			$accepts = \Hanariu\Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
 		}
 
 		if (isset($type))
@@ -227,7 +227,7 @@ class Request implements HTTP\Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+			$accepts = \Hanariu\Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 		}
 
 		if (isset($lang))
@@ -244,7 +244,7 @@ class Request implements HTTP\Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
+			$accepts = \Hanariu\Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
 		}
 
 		if (isset($type))
@@ -258,15 +258,15 @@ class Request implements HTTP\Request {
 
 	public static function post_max_size_exceeded()
 	{
-		if (Request::$initial->method() !== HTTP\Request::POST)
+		if (\Hanariu\Request::$initial->method() !== \Hanariu\HTTP\Request::POST)
 			return FALSE;
-		$max_bytes = Num::bytes(ini_get('post_max_size'));
-		return (Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
+		$max_bytes = \Hanariu\Num::bytes(\ini_get('post_max_size'));
+		return (\Hanariu\Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
 	}
 
 	public static function process(Request $request, $routes = NULL)
 	{
-		$routes = (empty($routes)) ? Route::all() : $routes;
+		$routes = (empty($routes)) ? \Hanariu\Route::all() : $routes;
 		$params = NULL;
 
 		foreach ($routes as $name => $route)
@@ -287,12 +287,12 @@ class Request implements HTTP\Request {
 	{
 		if ( ! empty($header))
 		{
-			$types = explode(',', $header);
+			$types = \explode(',', $header);
 
 			foreach ($types as $type)
 			{
-				$parts = explode(';', $type);
-				$type = trim(array_shift($parts));
+				$parts = \explode(';', $type);
+				$type = \trim(\array_shift($parts));
 				$quality = 1.0;
 
 				foreach ($parts as $part)
@@ -300,11 +300,11 @@ class Request implements HTTP\Request {
 					if (strpos($part, '=') === FALSE)
 						continue;
 
-					list ($key, $value) = explode('=', trim($part));
+					list ($key, $value) = \explode('=', \trim($part));
 
 					if ($key === 'q')
 					{
-						$quality = (float) trim($value);
+						$quality = (float) \trim($value);
 					}
 				}
 
@@ -313,7 +313,7 @@ class Request implements HTTP\Request {
 		}
 
 		$accepts = (array) $accepts;
-		arsort($accepts);
+		\arsort($accepts);
 
 		return $accepts;
 	}
@@ -343,37 +343,37 @@ class Request implements HTTP\Request {
 
 	public function __construct($uri, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
-		$client_params = is_array($client_params) ? $client_params : array();
-		$this->_header = new HTTP\Header(array());
+		$client_params = \is_array($client_params) ? $client_params : array();
+		$this->_header = new \Hanariu\HTTP\Header(array());
 		$this->_routes = $injected_routes;
-		$split_uri = explode('?', $uri);
-		$uri = array_shift($split_uri);
+		$split_uri = \explode('?', $uri);
+		$uri = \array_shift($split_uri);
 
-		if (Request::$initial !== NULL)
+		if (\Hanariu\Request::$initial !== NULL)
 		{
 			if ($split_uri)
 			{
-				parse_str($split_uri[0], $this->_get);
+				\parse_str($split_uri[0], $this->_get);
 			}
 		}
 
-		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
+		if ( ! $allow_external OR \strpos($uri, '://') === FALSE)
 		{
-			$this->_uri = trim($uri, '/');
-			$this->_client = new Request\Client\Internal($client_params);
+			$this->_uri = \trim($uri, '/');
+			$this->_client = new \Hanariu\Request\Client\Internal($client_params);
 		}
 		else
 		{
-			$this->_route = new Route($uri);
+			$this->_route = new \Hanariu\Route($uri);
 			$this->_uri = $uri;
 
-			if (strpos($uri, 'https://') === 0)
+			if (\strpos($uri, 'https://') === 0)
 			{
 				$this->secure(TRUE);
 			}
 
 			$this->_external = TRUE;
-			$this->_client = Request\Client\External::factory($client_params);
+			$this->_client = \Hanariu\Request\Client\External::factory($client_params);
 		}
 	}
 
@@ -398,7 +398,7 @@ class Request implements HTTP\Request {
 
 	public function url($protocol = NULL)
 	{
-		return URL::site($this->uri(), $protocol);
+		return \Hanariu\URL::site($this->uri(), $protocol);
 	}
 
 
@@ -516,7 +516,7 @@ class Request implements HTTP\Request {
 			return $this->_requested_with;
 		}
 
-		$this->_requested_with = strtolower($requested_with);
+		$this->_requested_with = \strtolower($requested_with);
 		return $this;
 	}
 
@@ -525,7 +525,7 @@ class Request implements HTTP\Request {
 	{
 		if ( ! $this->_external)
 		{
-			$processed = Request::process($this, $this->_routes);
+			$processed = \Hanariu\Request::process($this, $this->_routes);
 
 			if ($processed)
 			{
@@ -551,24 +551,24 @@ class Request implements HTTP\Request {
 				$this->_controller = $params['controller'];
 				$this->_action = (isset($params['action']))
 					? $params['action']
-					: Route::$default_action;
+					: \Hanariu\Route::$default_action;
 
 				unset($params['controller'], $params['action'], $params['directory'], $params['app'],$params['controller']);
 				$this->_params = $params;
 			}
 		}
 
-		if ( ! $this->_route instanceof Route)
+		if ( ! $this->_route instanceof \Hanariu\Route)
 		{
-			return HTTP\Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
+			return \Hanariu\HTTP\Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
 				':uri' => $this->_uri,
 			))->request($this)
 				->get_response();
 		}
 
-		if ( ! $this->_client instanceof Request\Client)
+		if ( ! $this->_client instanceof \Hanariu\Request\Client)
 		{
-			throw new Exception('Unable to execute :uri without a Hanariu_Request_Client', array(
+			throw new \Hanariu\Exception('Unable to execute :uri without a Hanariu_Request_Client', array(
 				':uri' => $this->_uri,
 			));
 		}
@@ -578,7 +578,7 @@ class Request implements HTTP\Request {
 
 	public function is_initial()
 	{
-		return ($this === Request::$initial);
+		return ($this === \Hanariu\Request::$initial);
 	}
 
 	public function is_external()
@@ -598,7 +598,7 @@ class Request implements HTTP\Request {
 			return $this->_method;
 		}
 
-		$this->_method = strtoupper($method);
+		$this->_method = \strtoupper($method);
 		return $this;
 	}
 
@@ -609,10 +609,10 @@ class Request implements HTTP\Request {
 			if ($this->_protocol)
 				return $this->_protocol;
 			else
-				return $this->_protocol = HTTP::$protocol;
+				return $this->_protocol = \Hanariu\HTTP::$protocol;
 		}
 
-		$this->_protocol = strtoupper($protocol);
+		$this->_protocol = \strtoupper($protocol);
 		return $this;
 	}
 
@@ -627,7 +627,7 @@ class Request implements HTTP\Request {
 
 	public function headers($key = NULL, $value = NULL)
 	{
-		if ($key instanceof HTTP\Header)
+		if ($key instanceof \Hanariu\HTTP\Header)
 		{
 			$this->_header = $key;
 			return $this;
@@ -641,7 +641,7 @@ class Request implements HTTP\Request {
 
 		if ($this->_header->count() === 0 AND $this->is_initial())
 		{
-			$this->_header = HTTP::request_headers();
+			$this->_header = \Hanariu\HTTP::request_headers();
 		}
 
 		if ($key === NULL)
@@ -660,7 +660,7 @@ class Request implements HTTP\Request {
 
 	public function cookie($key = NULL, $value = NULL)
 	{
-		if (is_array($key))
+		if (\is_array($key))
 		{
 			$this->_cookies = $key;
 			return $this;
@@ -691,7 +691,7 @@ class Request implements HTTP\Request {
 
 	public function content_length()
 	{
-		return strlen($this->body());
+		return \strlen($this->body());
 	}
 
 	public function render()
@@ -703,7 +703,7 @@ class Request implements HTTP\Request {
 		else
 		{
 			$this->headers('content-type', 'application/x-www-form-urlencoded');
-			$body = http_build_query($post, NULL, '&');
+			$body = \http_build_query($post, NULL, '&');
 		}
 
 		$this->headers('content-length', (string) $this->content_length());
@@ -721,7 +721,7 @@ class Request implements HTTP\Request {
 				$cookie_string[] = $key.'='.$value;
 			}
 
-			$this->_header['cookie'] = implode('; ', $cookie_string);
+			$this->_header['cookie'] = \implode('; ', $cookie_string);
 		}
 
 		$output = $this->method().' '.$this->uri().' '.$this->protocol()."\r\n";
@@ -745,7 +745,7 @@ class Request implements HTTP\Request {
 		}
 		elseif ($value === NULL)
 		{
-			return Arr::path($this->_get, $key);
+			return \Hanariu\Arr::path($this->_get, $key);
 		}
 
 		$this->_get[$key] = $value;
@@ -754,7 +754,7 @@ class Request implements HTTP\Request {
 
 	public function post($key = NULL, $value = NULL)
 	{
-		if (is_array($key))
+		if (\is_array($key))
 		{
 			$this->_post = $key;
 
@@ -767,7 +767,7 @@ class Request implements HTTP\Request {
 		}
 		elseif ($value === NULL)
 		{
-			return Arr::path($this->_post, $key);
+			return \Hanariu\Arr::path($this->_post, $key);
 		}
 
 		$this->_post[$key] = $value;

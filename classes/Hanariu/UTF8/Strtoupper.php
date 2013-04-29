@@ -5,7 +5,7 @@ class Strtoupper{
 	public static function _strtoupper($str)
 	{
 		if (\Hanariu\UTF8::is_ascii($str))
-			return strtoupper($str);
+			return \strtoupper($str);
 
 		static $utf8_lower_to_upper = NULL;
 
@@ -63,7 +63,7 @@ class Strtoupper{
 		if ($uni === FALSE)
 			return FALSE;
 
-		for ($i = 0, $c = count($uni); $i < $c; $i++)
+		for ($i = 0, $c = \count($uni); $i < $c; $i++)
 		{
 			if (isset($utf8_lower_to_upper[$uni[$i]]))
 			{

@@ -7,17 +7,17 @@ abstract class HTTP {
 
 	public static function redirect($uri = '', $code = 302)
 	{
-		$e = HTTP\Exception::factory($code);
+		$e = \Hanariu\HTTP\Exception::factory($code);
 
-		if ( ! $e instanceof HTTP\Exception\Redirect)
-			throw new Exception('Invalid redirect code \':code\'', array(
+		if ( ! $e instanceof \Hanariu\HTTP\Exception\Redirect)
+			throw new \Hanariu\Exception('Invalid redirect code \':code\'', array(
 				':code' => $code
 			));
 
 		throw $e->location($uri);
 	}
 
-	public static function check_cache(Request $request, Response $response, $etag = NULL)
+	public static function check_cache(\Hanariu\Request $request, \Hanariu\Response $response, $etag = NULL)
 	{
 		if ($etag == NULL)
 		{
@@ -37,7 +37,7 @@ abstract class HTTP {
 
 		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
 		{
-			throw HTTP\Exception::factory(304)->headers('etag', $etag);
+			throw \Hanariu\HTTP\Exception::factory(304)->headers('etag', $etag);
 		}
 
 		return $response;
@@ -46,14 +46,14 @@ abstract class HTTP {
 
 	public static function parse_header_string($header_string)
 	{
-		if (extension_loaded('http'))
+		if (\extension_loaded('http'))
 		{
-			return new HTTP\Header(http_parse_headers($header_string));
+			return new \Hanariu\HTTP\Header(\http_parse_headers($header_string));
 		}
 
 		$headers = array();
 
-		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header_string, $matches))
+		if (\preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header_string, $matches))
 		{
 			foreach ($matches[0] as $key => $value)
 			{
@@ -63,7 +63,7 @@ abstract class HTTP {
 				}
 				else
 				{
-					if (is_array($headers[$matches[1][$key]]))
+					if (\is_array($headers[$matches[1][$key]]))
 					{
 						$headers[$matches[1][$key]][] = $matches[2][$key];
 					}
@@ -78,18 +78,18 @@ abstract class HTTP {
 			}
 		}
 
-		return new HTTP\Header($headers);
+		return new \Hanariu\HTTP\Header($headers);
 	}
 
 	public static function request_headers()
 	{
-		if (function_exists('apache_request_headers'))
+		if (\function_exists('apache_request_headers'))
 		{
-			return new HTTP\Header(apache_request_headers());
+			return new \Hanariu\HTTP\Header(\apache_request_headers());
 		}
-		elseif (extension_loaded('http'))
+		elseif (\extension_loaded('http'))
 		{
-			return new HTTP\Header(http_get_request_headers());
+			return new \Hanariu\HTTP\Header(\http_get_request_headers());
 		}
 
 		$headers = array();
@@ -105,15 +105,15 @@ abstract class HTTP {
 
 		foreach ($_SERVER as $key => $value)
 		{
-			if (strpos($key, 'HTTP_') !== 0)
+			if (\strpos($key, 'HTTP_') !== 0)
 			{
 				continue;
 			}
 
-			$headers[str_replace(array('HTTP_', '_'), array('', '-'), $key)] = $value;
+			$headers[\str_replace(array('HTTP_', '_'), array('', '-'), $key)] = $value;
 		}
 
-		return new HTTP\Header($headers);
+		return new \Hanariu\HTTP\Header($headers);
 	}
 
 
@@ -126,9 +126,9 @@ abstract class HTTP {
 
 		foreach ($params as $key => $value)
 		{
-			$encoded[] = $key.'='.rawurlencode($value);
+			$encoded[] = $key.'='.\rawurlencode($value);
 		}
 
-		return implode('&', $encoded);
+		return \implode('&', $encoded);
 	}
 }

@@ -4,7 +4,7 @@ class Handler {
 
 	public static function error_handler($code, $error, $file = NULL, $line = NULL)
 	{
-		if (error_reporting() & $code)
+		if (\error_reporting() & $code)
 		{
 			throw new \ErrorException($error, $code, 0, $file, $line);
 		}
@@ -22,7 +22,8 @@ class Handler {
 		{
 			if (\Hanariu\Hanariu::$caching === TRUE AND \Hanariu\Hanariu::$_files_changed === TRUE)
 			{
-				Cache::cache('\Hanariu\Core\Filesystem::find_file()', \Hanariu\Hanariu::$_files);
+
+				\Hanariu\Hanariu::$cache->save('Hanariu::find_file()', \Hanariu\Hanariu::$_files);
 			}
 		}
 		catch (\Exception $e)
@@ -30,9 +31,9 @@ class Handler {
 			\Hanariu\Exception::handler($e);
 		}
 
-		if (\Hanariu\Hanariu::$errors AND $error = error_get_last() AND in_array($error['type'], \Hanariu\Hanariu::$shutdown_errors))
+		if (\Hanariu\Hanariu::$errors AND $error = \error_get_last() AND \in_array($error['type'], \Hanariu\Hanariu::$shutdown_errors))
 		{
-			ob_get_level() AND ob_clean();
+			\ob_get_level() AND \ob_clean();
 			\Hanariu\Exception::handler(new \ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 			exit(1);
 		}
