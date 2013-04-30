@@ -167,7 +167,7 @@ class Header extends \ArrayObject {
 
 		foreach ($this as $key => $value)
 		{
-			$key = \Hanariu\Text::ucfirst($key);
+			$key = \Hanariu\Utils::ucfirst($key);
 
 			if (\is_array($value))
 			{
@@ -525,7 +525,7 @@ class Header extends \ArrayObject {
 				$value = implode(', ', $value);
 			}
 
-			$processed_headers[] = \Hanariu\Text::ucfirst($header).': '.$value;
+			$processed_headers[] = \Hanariu\Utils::ucfirst($header).': '.$value;
 		}
 
 		if ( ! isset($headers['content-type']))

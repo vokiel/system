@@ -61,7 +61,7 @@ class URL {
 	{
 		$path = \preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
-		if ( ! \Hanariu\UTF8::is_ascii($path))
+		if ( ! \Hanariu\Utils::is_ascii($path))
 		{
 			$path = \preg_replace_callback('~([^/]+)~', 'URL::_rawurlencode_callback', $path);
 		}
@@ -102,18 +102,27 @@ class URL {
 
 	public static function title($title, $separator = '-', $ascii_only = FALSE)
 	{
-		if ($ascii_only === TRUE)
+		// replace non letter or digits by separator
+		$text = \preg_replace('~[^\\pL\d]+~u', $separator, $title);
+
+		// trim
+		$title = \trim($title, $separator);
+
+		// transliterate
+		$title = \iconv('utf-8', 'us-ascii//TRANSLIT', $title);
+
+		// lowercase
+		$title = \strtolower($title);
+
+		// remove unwanted characters
+		$title = \preg_replace('~[^-\w]+~', '', $title);
+
+		if (empty($title))
 		{
-			$title = \Hanariu\UTF8::transliterate_to_ascii($title);
-			$title = \preg_replace('![^'.\preg_quote($separator).'a-z0-9\s]+!', '', \strtolower($title));
-		}
-		else
-		{
-			$title = \preg_replace('![^'.\preg_quote($separator).'\pL\pN\s]+!u', '', \Hanariu\UTF8::strtolower($title));
+			return 'n-a';
 		}
 
-		$title = \preg_replace('!['.\preg_quote($separator).'\s]+!u', $separator, $title);
-		return \trim($title, $separator);
+		return $title;
 	}
 
 }

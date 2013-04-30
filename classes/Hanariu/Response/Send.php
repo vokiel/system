@@ -21,7 +21,7 @@ class Send extends \Hanariu\Response {
 
 			if ( ! isset($mime))
 			{
-				$mime = \Hanariu\File::mime_by_ext(\strtolower(\pathinfo($download, PATHINFO_EXTENSION)));
+				$mime = \Hanariu\Utils::mime_by_ext(\strtolower(\pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
 			$file_data = (string) $this->_body;

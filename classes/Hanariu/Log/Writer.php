@@ -28,7 +28,7 @@ abstract class Writer {
 
 	public function format_message(array $message, $format = "time --- level: body in file:line")
 	{
-		$message['time'] = \Hanariu\Date::formatted_time('@'.$message['time'], \Hanariu\Log\Writer::$timestamp, \Hanariu\Log\Writer::$timezone, TRUE);
+		$message['time'] = \Hanariu\Utils::formatted_time('@'.$message['time'], \Hanariu\Log\Writer::$timestamp, \Hanariu\Log\Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
 		$string = strtr($format, $message);
