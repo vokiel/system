@@ -201,7 +201,7 @@ class Request implements \Hanariu\HTTP\Request {
 
 	public static function user_agent($value)
 	{
-		return \Hanariu\Core\Agent::user_agent(\Hanariu\Request::$user_agent, $value);
+		return \Hanariu\Utils::user_agent(\Hanariu\Request::$user_agent, $value);
 	}
 
 	public static function accept_type($type = NULL)
@@ -260,7 +260,7 @@ class Request implements \Hanariu\HTTP\Request {
 	{
 		if (\Hanariu\Request::$initial->method() !== \Hanariu\HTTP\Request::POST)
 			return FALSE;
-		$max_bytes = \Hanariu\Num::bytes(\ini_get('post_max_size'));
+		$max_bytes = \Hanariu\Utils::bytes(\ini_get('post_max_size'));
 		return (\Hanariu\Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
 	}
 
