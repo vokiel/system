@@ -23,7 +23,7 @@ class Handler {
 			if (\Hanariu\Hanariu::$caching === TRUE AND \Hanariu\Hanariu::$_files_changed === TRUE)
 			{
 
-				\Hanariu\Hanariu::$cache->save('Hanariu::find_file()', \Hanariu\Hanariu::$_files);
+				\Hanariu\Hanariu::cache('Hanariu::find_file()', \Hanariu\Hanariu::$_files);
 			}
 		}
 		catch (\Exception $e)

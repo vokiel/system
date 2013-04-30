@@ -120,7 +120,7 @@ class View {
 
 	public function set_filename($file)
 	{
-		if (($path = Hanariu::$filesystem->find_file('views', $file)) === FALSE)
+		if (($path = Hanariu::find_file('views', $file)) === FALSE)
 		{
 			throw new Exception('The requested view :file could not be found', array(
 				':file' => $file,

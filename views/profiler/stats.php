@@ -10,11 +10,11 @@ $group_cols       = array('min', 'max', 'average', 'total');
 $application_cols = array('min', 'max', 'average', 'current');
 ?>
 
-<section class="hanariu">
+<div class="kohana">
 	<?php foreach (\Hanariu\Profiler::groups() as $group => $benchmarks): ?>
 	<table class="profiler">
 		<tr class="group">
-			<th class="name" rowspan="2"><?php echo __(ucfirst($group)) ?></th>
+			<th class="name" rowspan="2"><?php echo __(\ucfirst($group)) ?></th>
 			<td class="time" colspan="4"><?php echo \number_format($group_stats[$group]['total']['time'], 6) ?> <abbr title="seconds">s</abbr></td>
 		</tr>
 		<tr class="group">
@@ -28,7 +28,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 		</tr>
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
-			<?php $stats = Profiler::stats($tokens) ?>
+			<?php $stats = \Hanariu\Profiler::stats($tokens) ?>
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo \Hanariu\HTML::chars($name), ' (', \count($tokens), ')' ?></th>
 			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
@@ -58,7 +58,8 @@ $application_cols = array('min', 'max', 'average', 'current');
 	<?php endforeach ?>
 
 	<table class="profiler">
-		<?php $stats = Profiler::application() ?>
+
+		<?php $stats = \Hanariu\Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
 			<?php foreach ($application_cols as $key): ?>
@@ -71,4 +72,4 @@ $application_cols = array('min', 'max', 'average', 'current');
 			<?php endforeach ?>
 		</tr>
 	</table>
-</section>
+</div>

@@ -41,12 +41,12 @@ class I18n {
 		{
 			$path = \implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = Hanariu::$filesystem->find_all_files('i18n', $path))
+			if ($files = \Hanariu::find_file('i18n', $path, NULL, TRUE))
 			{
 				$t = array();
 				foreach ($files as $file)
 				{
-					$t = \array_merge($t, \Hanariu\Core\Filesystem::load($file));
+					$t = \array_merge($t, \Hanariu::load($file));
 				}
 
 				$table += $t;

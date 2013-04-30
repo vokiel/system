@@ -2,38 +2,34 @@
 
 class Message
 {
-	public function __construct(Filesystem $filesystem)
-	{
-		$this->_filesystem = $filesystem;
-	}
 
-	public function message($file, $path)
+	public static function message($file, $path = NULL, $default = NULL)
 	{
-		$messages = $this->_load_messages($file);
-		return $messages[$file][$path];
-	}
+		static $messages;
 
-	public function messages($file)
-	{
-		$messages = $this->_load_messages($file);
-		return $messages[$file];
-	}
-
-	protected function _load_messages($file)
-	{
-		$messages = array();
-
-		$files = $this->_filesystem->find_all_files('messages', $file);
-		if ($files)
+		if ( ! isset($messages[$file]))
 		{
 			$messages[$file] = array();
 
-			foreach ($files as $f)
+			if ($files = \Hanariu::find_file('messages', $file))
 			{
-				$messages[$file] = \array_merge($messages[$file], $this->_filesystem->load($f));
+				foreach ($files as $f)
+				{
+					// Combine all the messages recursively
+					$messages[$file] = \Hanariu\Arr::merge($messages[$file], \Hanariu::load($f));
+				}
 			}
 		}
 
-		return $messages;
+		if ($path === NULL)
+		{
+			// Return all of the messages
+			return $messages[$file];
+		}
+		else
+		{
+			// Get a message using the path
+			return \Hanariu\Arr::path($messages[$file], $path, $default);
+		}
 	}
 }
