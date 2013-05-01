@@ -67,11 +67,11 @@ class Debug {
 		}
 		elseif (\is_string($var))
 		{
-			$var = \Hanariu\UTF8::clean($var, Hanariu::$charset);
+			$var = \Hanariu\Utils::clean($var, Hanariu::$charset);
 
-			if (\Hanariu\UTF8::strlen($var) > $length)
+			if (\Hanariu\Utils::strlen($var) > $length)
 			{
-				$str = \htmlspecialchars(\Hanariu\UTF8::substr($var, 0, $length), ENT_NOQUOTES, Hanariu::$charset).'&nbsp;&hellip;';
+				$str = \htmlspecialchars(\Hanariu\Utils::substr($var, 0, $length), ENT_NOQUOTES, Hanariu::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
@@ -206,6 +206,45 @@ class Debug {
 		}
 
 		return $file;
+	}
+
+	public static function source_plaintext($file, $line_number, $padding = 5)
+	{
+		if ( ! $file OR ! \is_readable($file))
+		{
+
+			return FALSE;
+		}
+
+		$file = \fopen($file, 'r');
+		$line = 0;
+		$range = array('start' => $line_number - $padding, 'end' => $line_number + $padding);
+		$format = '% '.\strlen($range['end']).'d';
+		$source = '';
+		while (($row = \fgets($file)) !== FALSE)
+		{
+			// Increment the line number
+			if (++$line > $range['end'])
+				break;
+
+			if ($line >= $range['start'])
+			{
+				if ($line === $line_number)
+				{
+					$row = 'line #'.\sprintf($format, $line).' ERROR: '.$row;
+				}
+				else
+				{
+					$row = 'line #'.\sprintf($format, $line).' '.$row;
+				}
+
+				$source .= $row;
+			}
+		}
+
+		\fclose($file);
+
+		return $source;
 	}
 
 	public static function source($file, $line_number, $padding = 5)

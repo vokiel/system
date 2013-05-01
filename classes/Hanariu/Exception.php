@@ -56,7 +56,7 @@ class Exception extends \Exception {
 		}
 	}
 
-	public static function log(\Exception $e, $level = \Hanariu\Log::EMERGENCY)
+	public static function log(\Exception $e, $level = \Hanariu\Log::WARNING) //4
 	{
 		if (\is_object(\Hanariu\Hanariu::$log))
 		{

@@ -304,10 +304,10 @@ class Validation implements \ArrayAccess {
 				}
 			}
 
-			if ($message = \Hanariu\Core\Message::message($file, "{$field}.{$error}") AND \is_string($message)){}
-			elseif ($message = \Hanariu\Core\Message::message($file, "{$field}.default") AND \is_string($message)){}
-			elseif ($message = \Hanariu\Core\Message::message($file, $error) AND \is_string($message)){}
-			elseif ($message = \Hanariu\Core\Message::message('validation', $error) AND \is_string($message)){}
+			if ($message = \Hanariu\Message::message($file, "{$field}.{$error}") AND \is_string($message)){}
+			elseif ($message = \Hanariu\Message::message($file, "{$field}.default") AND \is_string($message)){}
+			elseif ($message = \Hanariu\Message::message($file, $error) AND \is_string($message)){}
+			elseif ($message = \Hanariu\Message::message('validation', $error) AND \is_string($message)){}
 			else
 			{
 				$message = "{$file}.{$field}.{$error}";

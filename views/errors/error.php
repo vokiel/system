@@ -48,17 +48,17 @@ function koggle(elem)
 }
 </script>
 <section id="hanariu_error">
-	<h1><span class="type"><?php echo $class ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo HTML::chars($message) ?></span></h1>
+	<h1><span class="type"><?php echo $class ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo \Hanariu\Utils::chars($message) ?></span></h1>
 	<section id="<?php echo $error_id ?>" class="content">
-		<p><span class="file"><?php echo Debug::path($file) ?> [ <?php echo $line ?> ]</span></p>
-		<?php echo Debug::source($file, $line) ?>
+		<p><span class="file"><?php echo \Hanariu\Debug::path($file) ?> [ <?php echo $line ?> ]</span></p>
+		<?php echo \Hanariu\Debug::source($file, $line) ?>
 		<ol class="trace">
-		<?php foreach (Debug::trace($trace) as $i => $step): ?>
+		<?php foreach (\Hanariu\Debug::trace($trace) as $i => $step): ?>
 			<li>
 				<p>
 					<span class="file">
 						<?php if ($step['file']): $source_id = $error_id.'source'.$i; ?>
-							<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo Debug::path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
+							<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo \Hanariu\Debug::path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
 						<?php else: ?>
 							{<?php echo __('PHP internal call') ?>}
 						<?php endif ?>
@@ -72,7 +72,7 @@ function koggle(elem)
 					<?php foreach ($step['args'] as $name => $arg): ?>
 						<tr>
 							<td><code><?php echo $name ?></code></td>
-							<td><pre><?php echo Debug::dump($arg) ?></pre></td>
+							<td><pre><?php echo \Hanariu\Debug::dump($arg) ?></pre></td>
 						</tr>
 					<?php endforeach ?>
 					</table>
@@ -88,37 +88,37 @@ function koggle(elem)
 	</section>
 	<h2><a href="#<?php echo $env_id = $error_id.'environment' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Environment') ?></a></h2>
 	<section id="<?php echo $env_id ?>" class="content collapsed">
-		<?php $included = get_included_files() ?>
+		<?php $included = \get_included_files() ?>
 		<h3><a href="#<?php echo $env_id = $error_id.'environment_included' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Included files') ?></a> (<?php echo count($included) ?>)</h3>
 		<section id="<?php echo $env_id ?>" class="collapsed">
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
 				<tr>
-					<td><code><?php echo Debug::path($file) ?></code></td>
+					<td><code><?php echo \Hanariu\Debug::path($file) ?></code></td>
 				</tr>
 				<?php endforeach ?>
 			</table>
 		</section>
-		<?php $included = get_loaded_extensions() ?>
+		<?php $included = \get_loaded_extensions() ?>
 		<h3><a href="#<?php echo $env_id = $error_id.'environment_loaded' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Loaded extensions') ?></a> (<?php echo count($included) ?>)</h3>
 		<section id="<?php echo $env_id ?>" class="collapsed">
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
 				<tr>
-					<td><code><?php echo Debug::path($file) ?></code></td>
+					<td><code><?php echo \Hanariu\Debug::path($file) ?></code></td>
 				</tr>
 				<?php endforeach ?>
 			</table>
 		</section>
 		<?php foreach (array('_SESSION', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER') as $var): ?>
-		<?php if (empty($GLOBALS[$var]) OR ! is_array($GLOBALS[$var])) continue ?>
-		<h3><a href="#<?php echo $env_id = $error_id.'environment'.strtolower($var) ?>" onclick="return koggle('<?php echo $env_id ?>')">$<?php echo $var ?></a></h3>
+		<?php if (empty($GLOBALS[$var]) OR ! \is_array($GLOBALS[$var])) continue ?>
+		<h3><a href="#<?php echo $env_id = $error_id.'environment'.\strtolower($var) ?>" onclick="return koggle('<?php echo $env_id ?>')">$<?php echo $var ?></a></h3>
 		<section id="<?php echo $env_id ?>" class="collapsed">
 			<table cellspacing="0">
 				<?php foreach ($GLOBALS[$var] as $key => $value): ?>
 				<tr>
-					<td><code><?php echo HTML::chars($key) ?></code></td>
-					<td><pre><?php echo Debug::dump($value) ?></pre></td>
+					<td><code><?php echo \Hanariu\Utils::chars($key) ?></code></td>
+					<td><pre><?php echo \Hanariu\Debug::dump($value) ?></pre></td>
 				</tr>
 				<?php endforeach ?>
 			</table>

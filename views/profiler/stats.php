@@ -1,7 +1,7 @@
 <?php namespace Hanariu; ?>
 
 <style type="text/css">
-<?php include Hanariu::find_file('views', 'profiler/style', 'css') ?>
+<?php include \Hanariu::find_file('views', 'profiler/style', 'css') ?>
 </style>
 
 <?php
@@ -10,11 +10,11 @@ $group_cols       = array('min', 'max', 'average', 'total');
 $application_cols = array('min', 'max', 'average', 'current');
 ?>
 
-<div class="kohana">
+<section class="hanariu">
 	<?php foreach (\Hanariu\Profiler::groups() as $group => $benchmarks): ?>
 	<table class="profiler">
 		<tr class="group">
-			<th class="name" rowspan="2"><?php echo __(\ucfirst($group)) ?></th>
+			<th class="name" rowspan="2"><?php echo __(ucfirst($group)) ?></th>
 			<td class="time" colspan="4"><?php echo \number_format($group_stats[$group]['total']['time'], 6) ?> <abbr title="seconds">s</abbr></td>
 		</tr>
 		<tr class="group">
@@ -58,7 +58,6 @@ $application_cols = array('min', 'max', 'average', 'current');
 	<?php endforeach ?>
 
 	<table class="profiler">
-
 		<?php $stats = \Hanariu\Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
@@ -72,4 +71,4 @@ $application_cols = array('min', 'max', 'average', 'current');
 			<?php endforeach ?>
 		</tr>
 	</table>
-</div>
+</section>

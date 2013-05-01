@@ -1,4 +1,4 @@
-<?php namespace Hanariu\Core;
+<?php namespace Hanariu;
 
 class Message
 {

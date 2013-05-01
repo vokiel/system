@@ -61,7 +61,7 @@ class URL {
 	{
 		$path = \preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
-		if ( ! \Hanariu\UTF8::is_ascii($path))
+		if ( ! \Hanariu\Utils::is_ascii($path))
 		{
 			$path = \preg_replace_callback('~([^/]+)~', 'URL::_rawurlencode_callback', $path);
 		}
@@ -104,12 +104,12 @@ class URL {
 	{
 		if ($ascii_only === TRUE)
 		{
-			$title = \Hanariu\UTF8::transliterate_to_ascii($title);
+			$title = \Hanariu\Utils::transliterate_to_ascii($title);
 			$title = \preg_replace('![^'.\preg_quote($separator).'a-z0-9\s]+!', '', \strtolower($title));
 		}
 		else
 		{
-			$title = \preg_replace('![^'.\preg_quote($separator).'\pL\pN\s]+!u', '', \Hanariu\UTF8::strtolower($title));
+			$title = \preg_replace('![^'.\preg_quote($separator).'\pL\pN\s]+!u', '', \Hanariu\Utils::strtolower($title));
 		}
 
 		$title = \preg_replace('!['.\preg_quote($separator).'\s]+!u', $separator, $title);
