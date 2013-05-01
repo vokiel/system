@@ -14,7 +14,8 @@ class Exception extends \Exception {
 		E_DEPRECATED => 'Deprecated',
 	);
 
-	public static $error_view_content_type = 'text/plain';
+	public static $error_view = 'errors/error';
+	public static $error_view_content_type = 'text/html';
 
 	public function __construct($message = "", array $variables = NULL, $code = 0, \Exception $previous = NULL)
 	{
@@ -127,19 +128,11 @@ class Exception extends \Exception {
 				$trace = \array_slice($trace, 0, 2);
 			}
 
-			$items = get_defined_vars();
-
-			$error = "\nError class: ".$items['class'];
-			$error .= "\nError code: ".$items['code'];
-			$error .= "\nError message: ".$items['message'];
-			$error .= "\nError path: ".\Hanariu\Debug::path($items['file']);
-			$error .= "\nError line: ".$items['line'];
-			$error .= "\nError line source: \n".\Hanariu\Debug::source_plaintext($file, $line) ;
-
+			$view = \Hanariu\View::factory(\Hanariu\Exception::$error_view, \get_defined_vars());
 			$response = \Hanariu\Response::factory();
 			$response->status(($e instanceof \Hanariu\HTTP\Exception) ? $e->getCode() : 500);
 			$response->headers('Content-Type', \Hanariu\Exception::$error_view_content_type.'; charset='.\Hanariu\Hanariu::$charset);
-			$response->body($error);
+			$response->body($view->render());
 		}
 		catch (Exception $e)
 		{

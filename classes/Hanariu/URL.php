@@ -102,27 +102,18 @@ class URL {
 
 	public static function title($title, $separator = '-', $ascii_only = FALSE)
 	{
-		// replace non letter or digits by separator
-		$text = \preg_replace('~[^\\pL\d]+~u', $separator, $title);
-
-		// trim
-		$title = \trim($title, $separator);
-
-		// transliterate
-		$title = \iconv('utf-8', 'us-ascii//TRANSLIT', $title);
-
-		// lowercase
-		$title = \strtolower($title);
-
-		// remove unwanted characters
-		$title = \preg_replace('~[^-\w]+~', '', $title);
-
-		if (empty($title))
+		if ($ascii_only === TRUE)
 		{
-			return 'n-a';
+			$title = \Hanariu\Utils::transliterate_to_ascii($title);
+			$title = \preg_replace('![^'.\preg_quote($separator).'a-z0-9\s]+!', '', \strtolower($title));
+		}
+		else
+		{
+			$title = \preg_replace('![^'.\preg_quote($separator).'\pL\pN\s]+!u', '', \Hanariu\Utils::strtolower($title));
 		}
 
-		return $title;
+		$title = \preg_replace('!['.\preg_quote($separator).'\s]+!u', $separator, $title);
+		return \trim($title, $separator);
 	}
 
 }
