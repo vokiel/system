@@ -60,7 +60,7 @@ class Utils {
 
 		$size = (float) $matches[1];
 		$unit = \Hanariu\Arr::get($matches, 2, 'B');
-		$bytes = $size * \pow(2, \Hanariu\Num::$byte_units[$unit]);
+		$bytes = $size * \pow(2, \Hanariu\Utils::$byte_units[$unit]);
 		return $bytes;
 	}
 
