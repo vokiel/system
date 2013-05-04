@@ -31,14 +31,8 @@ abstract class Controller {
 	}
 
 
-	public function before(){
-
-		$lang = $this->request->lang();
-
-		if(!empty($lang)){
-			\Hanariu\I18n::lang($lang);
-		}
-	}
+	public function before(){}
+	
 	public function after(){}
 
 

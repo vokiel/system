@@ -1,7 +1,7 @@
 <?php namespace Hanariu; ?>
 
 <style type="text/css">
-<?php include Hanariu::find_file('views', 'profiler/style', 'css') ?>
+<?php include \Hanariu::find_file('views', 'profiler/style', 'css') ?>
 </style>
 
 <?php
@@ -28,7 +28,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 		</tr>
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
-			<?php $stats = Profiler::stats($tokens) ?>
+			<?php $stats = \Hanariu\Profiler::stats($tokens) ?>
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo \Hanariu\HTML::chars($name), ' (', \count($tokens), ')' ?></th>
 			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
@@ -58,7 +58,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 	<?php endforeach ?>
 
 	<table class="profiler">
-		<?php $stats = Profiler::application() ?>
+		<?php $stats = \Hanariu\Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
 			<?php foreach ($application_cols as $key): ?>

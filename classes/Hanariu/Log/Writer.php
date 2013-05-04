@@ -28,10 +28,10 @@ abstract class Writer {
 
 	public function format_message(array $message, $format = "time --- level: body in file:line")
 	{
-		$message['time'] = \Hanariu\Date::formatted_time('@'.$message['time'], \Hanariu\Log\Writer::$timestamp, \Hanariu\Log\Writer::$timezone, TRUE);
+		$message['time'] = \Hanariu\Utils::formatted_time('@'.$message['time'], \Hanariu\Log\Writer::$timestamp, \Hanariu\Log\Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
-		$string = strtr($format, $message);
+		$string = strtr($format, array_filter($message, 'is_scalar'));
 
 		if (isset($message['additional']['exception']))
 		{
@@ -39,7 +39,7 @@ abstract class Writer {
 			$message['body'] = $message['additional']['exception']->getTraceAsString();
 			$message['level'] = $this->_log_levels[\Hanariu\Log\Writer::$strace_level];
 
-			$string .= PHP_EOL.\strtr($format, $message);
+			$string .= PHP_EOL.strtr($format, array_filter($message, 'is_scalar'));
 		}
 
 		return $string;

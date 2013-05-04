@@ -4,9 +4,16 @@ abstract class Exception extends \Hanariu\Exception {
 
 	public static function factory($code, $message = NULL, array $variables = NULL, \Hanariu\Exception $previous = NULL)
 	{
-		$class = '\\Hanariu\\HTTP\\Exception\\E'.$code;
+		$class = '\\Hanariu\\HTTP\\Exception\\Error'.$code;
+		if (class_exists($class)) {
 		
-		return new $class($message, $variables, $previous);
+		    	return new $class($message, $variables, $previous);
+		}
+		else
+		{
+			$class = '\\Hanariu\\HTTP\\Exception\\E'.$code;
+			return new $class($message, $variables, $previous);
+		}
 	}
 
 	protected $_code = 0;

@@ -4,7 +4,7 @@ class Syslog extends Writer {
 
 	protected $_ident;
 
-	public function __construct($ident = 'HanariuPHP', $facility = LOG_USER)
+	public function __construct($ident = 'Hanariu', $facility = LOG_USER)
 	{
 		$this->_ident = $ident;
 		\openlog($this->_ident, LOG_CONS, $facility);

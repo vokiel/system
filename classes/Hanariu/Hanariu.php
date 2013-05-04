@@ -33,8 +33,6 @@ class Hanariu {
 	public static $_paths = array(APPPATH, SYSPATH);
 	public static $_files = array();
 	public static $_files_changed = FALSE;
-	public static $filesystem = NULL;
-	public static $cache = NULL;
 
 	public static function init(array $settings = NULL)
 	{
@@ -124,7 +122,7 @@ class Hanariu {
 
 		if (Hanariu::$caching === TRUE)
 		{
-			Hanariu::$_files = \Hanariu::$cache->read('Hanariu::find_file()');
+			Hanariu::$_files = \Hanariu::cache('Hanariu::find_file()');
 		}
 
 		if (isset($settings['charset']))
@@ -178,7 +176,7 @@ class Hanariu {
 
 			Hanariu::$log = Hanariu::$config = NULL;
 			Hanariu::$_modules = Hanariu::$_files = array();
-			Hanariu::$_paths   = array(APPPATH, SYSPATH);
+			Hanariu::$_paths = array(APPPATH, SYSPATH);
 			Hanariu::$_files_changed = FALSE;
 			Hanariu::$_init = FALSE;
 		}
@@ -236,6 +234,30 @@ class Hanariu {
 		return $value;
 	}
 
+	public static function auto_load($class, $directory = 'classes')
+	{
+		$class     = \ltrim($class, '\\');
+		$file      = '';
+		$namespace = '';
+
+		if ($last_namespace_position = \strripos($class, '\\'))
+		{
+			$namespace = \substr($class, 0, $last_namespace_position);
+			$class     = \substr($class, $last_namespace_position + 1);
+			$file      = \str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
+		}
+
+		$file .= \str_replace('_', DIRECTORY_SEPARATOR, $class);
+
+		if ($path = Hanariu::find_file($directory, $file))
+		{
+			require $path;
+
+			return TRUE;
+		}
+
+		return FALSE;
+	}
 	
 	public static function modules(array $modules = NULL)
 	{
@@ -264,7 +286,233 @@ class Hanariu {
 		Hanariu::$_paths = $paths;
 		Hanariu::$_modules = $modules;
 
+		foreach (Hanariu::$_modules as $path)
+		{
+			$init = $path.'init'.EXT;
+
+			if (\is_file($init))
+			{
+				require_once $init;
+			}
+		}
+
 		return Hanariu::$_modules;
+	}
+
+	public static function include_paths()
+	{
+		return Hanariu::$_paths;
+	}
+
+	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
+	{
+		if ($ext === NULL)
+		{
+			$ext = EXT;
+		}
+		elseif ($ext)
+		{
+			$ext = ".{$ext}";
+		}
+		else
+		{
+			$ext = '';
+		}
+
+		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
+
+		if (Hanariu::$caching === TRUE AND isset(Hanariu::$_files[$path.($array ? '_array' : '_path')]))
+		{
+			return Hanariu::$_files[$path.($array ? '_array' : '_path')];
+		}
+
+		if (Hanariu::$profiling === TRUE AND \class_exists('\Hanariu\Profiler', FALSE))
+		{
+			$benchmark = \Hanariu\Profiler::start('Hanariu', __FUNCTION__);
+		}
+
+		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
+		{
+			$paths = \array_reverse(Hanariu::$_paths);
+
+			$found = array();
+
+			foreach ($paths as $dir)
+			{
+				if (\is_file($dir.$path))
+				{
+					$found[] = $dir.$path;
+				}
+			}
+		}
+		else
+		{
+			$found = FALSE;
+
+			foreach (Hanariu::$_paths as $dir)
+			{
+				if (\is_file($dir.$path))
+				{
+					$found = $dir.$path;
+
+					break;
+				}
+			}
+		}
+
+		if (Hanariu::$caching === TRUE)
+		{
+			Hanariu::$_files[$path.($array ? '_array' : '_path')] = $found;
+
+			Hanariu::$_files_changed = TRUE;
+		}
+
+		if (isset($benchmark))
+		{
+			\Hanariu\Profiler::stop($benchmark);
+		}
+
+		return $found;
+	}
+
+	public static function list_files($directory = NULL, array $paths = NULL)
+	{
+		if ($directory !== NULL)
+		{
+			$directory .= DIRECTORY_SEPARATOR;
+		}
+
+		if ($paths === NULL)
+		{
+			$paths = Hanariu::$_paths;
+		}
+
+		$found = array();
+
+		foreach ($paths as $path)
+		{
+			if (\is_dir($path.$directory))
+			{
+				$dir = new DirectoryIterator($path.$directory);
+
+				foreach ($dir as $file)
+				{
+					$filename = $file->getFilename();
+
+					if ($filename[0] === '.' OR $filename[\strlen($filename)-1] === '~')
+					{
+						continue;
+					}
+
+					// Relative filename is the array key
+					$key = $directory.$filename; //$key = $directory.'/'.$filename;?
+
+					if ($file->isDir())
+					{
+						if ($sub_dir = Hanariu::list_files($key, $paths))
+						{
+							if (isset($found[$key]))
+							{
+								$found[$key] += $sub_dir;
+							}
+							else
+							{
+								$found[$key] = $sub_dir;
+							}
+						}
+					}
+					else
+					{
+						if ( ! isset($found[$key]))
+						{
+							$found[$key] = \realpath($file->getPathName());
+						}
+					}
+				}
+			}
+		}
+
+		\ksort($found);
+
+		return $found;
+	}
+
+	public static function load($file)
+	{
+		return include $file;
+	}
+
+	public static function cache($name, $data = NULL, $lifetime = NULL)
+	{
+		// Cache file is a hash of the name
+		$file = \sha1($name).'.txt';
+
+		// Cache directories are split by keys to prevent filesystem overload
+		$dir = Hanariu::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
+
+		if ($lifetime === NULL)
+		{
+			// Use the default lifetime
+			$lifetime = Hanariu::$cache_life;
+		}
+
+		if ($data === NULL)
+		{
+			if (\is_file($dir.$file))
+			{
+				if ((\time() - \filemtime($dir.$file)) < $lifetime)
+				{
+					// Return the cache
+					try
+					{
+						return \unserialize(\file_get_contents($dir.$file));
+					}
+					catch (\Exception $e)
+					{
+						// Cache is corrupt, let return happen normally.
+					}
+				}
+				else
+				{
+					try
+					{
+						// Cache has expired
+						\unlink($dir.$file);
+					}
+					catch (\Exception $e)
+					{
+						// Cache has mostly likely already been deleted,
+						// let return happen normally.
+					}
+				}
+			}
+
+			// Cache not found
+			return NULL;
+		}
+
+		if ( ! \is_dir($dir))
+		{
+			// Create the cache directory
+			\mkdir($dir, 0777, TRUE);
+
+			// Set permissions (must be manually set to fix umask issues)
+			\chmod($dir, 0777);
+		}
+
+		// Force the data to be a string
+		$data = \serialize($data);
+
+		try
+		{
+			// Write the cache
+			return (bool) \file_put_contents($dir.$file, $data, LOCK_EX);
+		}
+		catch (\Exception $e)
+		{
+			// Failed to write cache
+			return FALSE;
+		}
 	}
 
 	public static function version()
