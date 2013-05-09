@@ -1,3 +1,8 @@
 <?php namespace Hanariu\HTTP;
 
-interface Message extends \Hanariu\Core\HTTP\Message {}
+interface Message {
+	public function protocol($protocol = NULL);
+	public function headers($key = NULL, $value = NULL);
+	public function body($content = NULL);
+	public function render();
+}

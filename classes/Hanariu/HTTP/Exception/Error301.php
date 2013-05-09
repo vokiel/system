@@ -1,3 +1,10 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error301 extends \Hanariu\Core\HTTP\Exception\Error301 {}
+class Error301 extends Redirect {
+
+	/**
+	 * @var   integer    HTTP 301 Moved Permanently
+	 */
+	protected $_code = 301;
+
+}

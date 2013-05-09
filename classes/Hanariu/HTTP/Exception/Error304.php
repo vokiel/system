@@ -1,3 +1,10 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error304 extends \Hanariu\Core\HTTP\Exception\Error304 {}
+class Error304 extends Expected {
+
+	/**
+	 * @var   integer    HTTP 304 Not Modified
+	 */
+	protected $_code = 304;
+	
+}

@@ -1,3 +1,10 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error307 extends \Hanariu\Core\HTTP\Exception\Error307 {}
+class Error307 extends Redirect {
+
+	/**
+	 * @var   integer    HTTP 307 Temporary Redirect
+	 */
+	protected $_code = 307;
+
+}
