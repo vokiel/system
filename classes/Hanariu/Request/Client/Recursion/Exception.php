@@ -1,3 +1,3 @@
-<?php namespace Riu\Request\Client\Recursion;
+<?php namespace Hanariu\Request\Client\Recursion;
 
-class Exception extends \Hanariu\Exception {}
+class Exception extends Hanariu\Core\Request\Client\Recursio\Exception {}
