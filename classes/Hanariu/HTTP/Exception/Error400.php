@@ -1,10 +1,3 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error400 extends \Hanariu\HTTP\Exception{
-
-	/**
-	 * @var   integer    HTTP 400 Bad Request
-	 */
-	protected $_code = 400;
-
-}
+class Error400 extends \Hanariu\Core\HTTP\Exception\Error400 {}

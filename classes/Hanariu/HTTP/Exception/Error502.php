@@ -1,10 +1,3 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error502 extends \Hanariu\HTTP\Exception {
-
-	/**
-	 * @var   integer    HTTP 502 Bad Gateway
-	 */
-	protected $_code = 502;
-
-}
+class Error502 extends \Hanariu\Core\HTTP\Exception\Error502{}

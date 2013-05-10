@@ -1,10 +1,3 @@
 <?php namespace Hanariu\HTTP\Exception;
 
-class Error501 extends \Hanariu\HTTP\Exception {
-
-	/**
-	 * @var   integer    HTTP 501 Not Implemented
-	 */
-	protected $_code = 501;
-
-}
+class Error501 extends \Hanariu\Core\HTTP\Exception\Error501{}
