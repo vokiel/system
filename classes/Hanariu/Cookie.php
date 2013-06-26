@@ -43,7 +43,7 @@ class Cookie {
 
 		if ($expiration !== 0)
 		{
-			$expiration += t\ime();
+			$expiration += time();
 		}
 
 		$value = \Hanariu\Cookie::salt($name, $value).'~'.$value;
